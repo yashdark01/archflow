@@ -1,0 +1,9 @@
+{
+    "editor.screenReaderAnnounceInlineSuggestion": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.inlineSuggest.showToolbar": "never",
+    "editor.inlineSuggest.syntaxHighlightingEnabled": false,
+    "editor.inlineSuggest.suppressInSnippetMode": false
+}
