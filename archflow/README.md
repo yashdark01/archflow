@@ -38,21 +38,24 @@ Drag   → Drop → Connect → Design
 
 ## Features
 
-### Phase 1 — Canvas MVP
+### Phase 1 — Canvas MVP ✅
 - ✅ Infinite zoomable/pannable canvas (React Flow)
-- ✅ 7 draggable node types from sidebar palette
-- ✅ Custom labeled edges (bezier / straight / smoothstep)
-- ✅ Node properties panel (label, color, description)
-- ✅ Undo / Redo (Redux past/future stack)
-- ✅ PNG export
-- ✅ Auto-save to localStorage
+- ✅ 9 node types + Eraser icon palette
+- ✅ Custom labeled edges (bezier / straight / smoothstep) with inline canvas labels
+- ✅ Edge arrow directions (forward, backward, bidirectional, none)
+- ✅ Node & edge properties panel (resizable on desktop)
+- ✅ Undo / Redo (50-step history)
+- ✅ PNG export (white / transparent) + clipboard copy
+- ✅ Auto-save to localStorage with quota recovery
 - ✅ Keyboard shortcuts
+- ✅ Mobile read-only banner, error boundary, loading skeleton
 
-### Phase 2 — Diagram-as-Code
-- ✅ Monaco editor panel with Mermaid syntax
-- ✅ Two-way sync: canvas ↔ code
-- ✅ Live Mermaid preview
-- ✅ Toggle code panel open/close
+### Phase 2 — Diagram-as-Code ✅
+- ✅ Monaco Mermaid editor + live SVG preview
+- ✅ Two-way sync: canvas ↔ Mermaid (`graph LR` / `graph TD`)
+- ✅ Eraser DSL mode (toggle in code panel)
+- ✅ Sync status badge + copy snippet
+- ✅ Vitest round-trip tests
 
 ### Phase 3 — Auth + Persistence
 - ✅ NextAuth.js authentication (Google + Email)

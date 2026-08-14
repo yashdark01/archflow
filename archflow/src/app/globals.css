@@ -1,26 +1,632 @@
 @import "tailwindcss";
+@import "reactflow/dist/style.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* Yash Patidar portfolio theme — https://yashpatidar.vercel.app */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --yash-black: #0a0a0b;
+  --yash-surface: #141416;
+  --yash-surface-elevated: #1c1c1f;
+  --yash-border: rgba(255, 255, 255, 0.06);
+  --yash-border-hover: rgba(255, 255, 255, 0.1);
+  --yash-text: #fafafa;
+  --yash-text-muted: #8b8b95;
+  --yash-accent: #10b981;
+  --yash-accent-hover: #059669;
+  --yash-accent-muted: rgba(16, 185, 129, 0.12);
+  --yash-cyan: #22d3ee;
+  --yash-amber: #f59e0b;
+  --yash-violet: #a78bfa;
+
+  --background: var(--yash-black);
+  --foreground: var(--yash-text);
+  --card: var(--yash-surface);
+  --card-foreground: var(--yash-text);
+  --popover: var(--yash-surface-elevated);
+  --popover-foreground: var(--yash-text);
+  --primary: var(--yash-accent);
+  --primary-foreground: var(--yash-black);
+  --secondary: var(--yash-surface-elevated);
+  --secondary-foreground: var(--yash-text);
+  --muted: var(--yash-surface-elevated);
+  --muted-foreground: var(--yash-text-muted);
+  --accent: var(--yash-accent-muted);
+  --accent-foreground: var(--yash-accent);
+  --destructive: oklch(0.637 0.237 25.331);
+  --border: var(--yash-border);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: var(--yash-accent);
+  --radius: 0.75rem;
+
+  --surface: var(--yash-surface);
+  --surface-muted: var(--yash-surface-elevated);
+  --primary-hover: var(--yash-accent-hover);
+  --border-strong: var(--yash-border-hover);
+  --success: var(--yash-accent);
+  --warning: var(--yash-amber);
+  --canvas-dot: #27272a;
+  --canvas-bg: #f8f9fb;
+  --canvas-dot-light: #e2e5ea;
+  --canvas-border: #e2e8f0;
+  --canvas-text-muted: #64748b;
+  --canvas-banner-bg: rgba(255, 255, 255, 0.96);
+  --canvas-selection: #2563eb;
+  --canvas-edge: #94a3b8;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 8px 24px rgb(0 0 0 / 0.35);
+
+  --chart-1: var(--yash-accent);
+  --chart-2: var(--yash-cyan);
+  --chart-3: var(--yash-amber);
+  --chart-4: var(--yash-violet);
+  --chart-5: #f472b6;
+
+  --sidebar: var(--yash-surface);
+  --sidebar-foreground: var(--yash-text);
+  --sidebar-primary: var(--yash-accent);
+  --sidebar-primary-foreground: var(--yash-black);
+  --sidebar-accent: var(--yash-surface-elevated);
+  --sidebar-accent-foreground: var(--yash-text);
+  --sidebar-border: var(--yash-border);
+  --sidebar-ring: var(--yash-accent);
+
+  --panel-bg: var(--yash-surface-elevated);
+  --panel-border: var(--yash-border);
+  --editor-canvas-bg: #141416;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-ring: var(--ring);
+  --color-yash-cyan: var(--yash-cyan);
+  --color-yash-amber: var(--yash-amber);
+  --color-yash-violet: var(--yash-violet);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-input: var(--input);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: var(--yash-black);
+  --foreground: var(--yash-text);
+  --card: var(--yash-surface);
+  --card-foreground: var(--yash-text);
+  --popover: var(--yash-surface-elevated);
+  --popover-foreground: var(--yash-text);
+  --primary: var(--yash-accent);
+  --primary-foreground: var(--yash-black);
+  --secondary: var(--yash-surface-elevated);
+  --secondary-foreground: var(--yash-text);
+  --muted: var(--yash-surface-elevated);
+  --muted-foreground: var(--yash-text-muted);
+  --accent: var(--yash-accent-muted);
+  --accent-foreground: var(--yash-accent);
+  --border: var(--yash-border);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: var(--yash-accent);
+  --panel-bg: var(--yash-surface-elevated);
+  --panel-border: var(--yash-border);
+  --editor-canvas-bg: #141416;
+}
+
+.light {
+  --yash-black: #f8fafc;
+  --yash-surface: #ffffff;
+  --yash-surface-elevated: #f1f5f9;
+  --yash-border: rgba(15, 23, 42, 0.08);
+  --yash-border-hover: rgba(15, 23, 42, 0.14);
+  --yash-text: #0f172a;
+  --yash-text-muted: #64748b;
+  --yash-accent-muted: rgba(16, 185, 129, 0.1);
+
+  --background: var(--yash-black);
+  --foreground: var(--yash-text);
+  --card: var(--yash-surface);
+  --card-foreground: var(--yash-text);
+  --popover: var(--yash-surface);
+  --popover-foreground: var(--yash-text);
+  --primary: var(--yash-accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--yash-surface-elevated);
+  --secondary-foreground: var(--yash-text);
+  --muted: var(--yash-surface-elevated);
+  --muted-foreground: var(--yash-text-muted);
+  --accent: var(--yash-accent-muted);
+  --accent-foreground: var(--yash-accent);
+  --border: var(--yash-border);
+  --input: rgba(15, 23, 42, 0.06);
+  --ring: var(--yash-accent);
+  --panel-bg: var(--yash-surface);
+  --panel-border: var(--yash-border);
+  --editor-canvas-bg: #f8fafc;
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-md: 0 8px 24px rgb(15 23 42 / 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: var(--yash-text);
+  background-color: rgba(16, 185, 129, 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid var(--yash-accent);
+  outline-offset: 2px;
+}
+
+.glass-nav {
+  backdrop-filter: blur(8px);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-toolbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.card-surface {
+  background: var(--yash-surface);
+  border: 1px solid var(--yash-border);
+  border-radius: var(--radius);
+  transition: border-color 0.2s ease;
+}
+
+.card-surface:hover {
+  border-color: var(--yash-border-hover);
+}
+
+.section-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--yash-text-muted);
+}
+
+.react-flow__node.selected .archflow-node {
+  box-shadow: 0 0 0 2px var(--yash-accent);
+}
+
+.archflow-canvas-eraser .react-flow__node.selected .archflow-node,
+.archflow-canvas-eraser .react-flow__node.selected .archflow-icon-node,
+.archflow-canvas-eraser .react-flow__node.selected .archflow-group {
+  box-shadow: 0 0 0 2px var(--canvas-selection);
+}
+
+.archflow-canvas-eraser .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--canvas-selection);
+}
+
+.react-flow__node.dragging {
+  transition: none !important;
+  z-index: 1000 !important;
+}
+
+.react-flow__node.dragging .archflow-icon-node {
+  transform: scale(1.04);
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--yash-accent);
+  stroke-width: 2.5;
+}
+
+.archflow-canvas-light .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--canvas-selection);
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke-width: 2.5;
+  filter: brightness(1.15);
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--yash-black);
+  transition:
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.react-flow__handle.archflow-handle:hover,
+.react-flow__handle.connecting,
+.react-flow__handle.valid {
+  opacity: 1 !important;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px var(--yash-accent-muted);
+}
+
+.archflow-connection-preview {
+  pointer-events: none;
+}
+
+.archflow-connection-line {
+  animation: archflow-dash 0.6s linear infinite;
+  opacity: 0.9;
+}
+
+.archflow-connection-dot {
+  animation: archflow-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes archflow-dash {
+  to {
+    stroke-dashoffset: -13;
+  }
+}
+
+@keyframes archflow-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes archflow-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes archflow-slide-up {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.archflow-canvas {
+  background: var(--yash-surface-elevated);
+}
+
+.archflow-canvas-eraser {
+  background: #1a1a1c;
+}
+
+.archflow-canvas-eraser .react-flow__background pattern circle,
+.archflow-canvas-eraser .react-flow__background path {
+  opacity: 0.35;
+}
+
+.editor-document {
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+.editor-canvas-area {
+  isolation: isolate;
+  background: var(--editor-canvas-bg);
+}
+
+.panel-chrome {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--foreground);
+}
+
+.canvas-tool-rail {
+  pointer-events: auto;
+}
+
+.canvas-placement-active .react-flow__pane {
+  cursor: crosshair !important;
+}
+
+.insert-picker {
+  animation: archflow-fade-in 0.15s ease-out;
+}
+
+.placement-ghost {
+  animation: archflow-fade-in 0.1s ease-out;
+}
+
+/* Tiptap document editor — Notion/Docs-style */
+.archflow-doc-editor {
+  min-height: 200px;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--foreground);
+}
+
+.archflow-doc-editor-compact {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.archflow-doc-editor .tiptap {
+  outline: none;
+}
+
+.archflow-doc-editor .tiptap p.is-editor-empty:first-child::before,
+.archflow-doc-editor .tiptap.is-empty::before {
+  color: var(--muted-foreground);
+  opacity: 0.45;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.archflow-doc-editor .tiptap[data-placeholder]:empty::before {
+  color: var(--muted-foreground);
+  opacity: 0.45;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.archflow-doc-editor .tiptap h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.archflow-doc-editor .tiptap h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1rem 0 0.5rem;
+}
+
+.archflow-doc-editor .tiptap h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.archflow-doc-editor .tiptap p {
+  margin: 0.35rem 0;
+}
+
+.archflow-doc-editor .tiptap ul,
+.archflow-doc-editor .tiptap ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.archflow-doc-editor .tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0.25rem;
+}
+
+.archflow-doc-editor .tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.archflow-doc-editor .tiptap ul[data-type="taskList"] li > label {
+  margin-top: 0.2rem;
+}
+
+.archflow-doc-editor .tiptap blockquote {
+  border-left: 3px solid var(--border);
+  margin: 0.75rem 0;
+  padding-left: 1rem;
+  color: var(--muted-foreground);
+}
+
+.archflow-doc-editor .tiptap pre.archflow-code-block,
+.archflow-doc-editor .tiptap pre {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.archflow-doc-editor .tiptap code {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+}
+
+.archflow-doc-editor .tiptap pre code {
+  background: none;
+  padding: 0;
+}
+
+.archflow-doc-editor .tiptap a.archflow-doc-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.archflow-doc-editor .tiptap hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+.archflow-canvas-light .react-flow__handle {
+  border-color: var(--canvas-bg);
+}
+
+.archflow-canvas-light .react-flow__handle.archflow-handle:hover,
+.archflow-canvas-light .react-flow__handle.connecting,
+.archflow-canvas-light .react-flow__handle.valid {
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.canvas-control-surface {
+  background: var(--canvas-banner-bg);
+  border: 1px solid var(--canvas-border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 0.08);
+}
+
+.react-flow__node-group {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.react-flow__node.selected .archflow-icon-node {
+  box-shadow: none;
+}
+
+.archflow-icon-node {
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.2s ease;
+}
+
+.archflow-icon-node:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.25));
+}
+
+.archflow-group {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.archflow-group:hover {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.archflow-empty-state {
+  animation: archflow-fade-in 0.35s ease-out;
+}
+
+.archflow-canvas-light .archflow-empty-state {
+  background: var(--canvas-banner-bg);
+  border-color: var(--canvas-border);
+}
+
+.archflow-canvas-light .archflow-icon-node:hover {
+  filter: drop-shadow(0 4px 8px rgb(15 23 42 / 0.12));
+}
+
+.archflow-canvas-light .react-flow__minimap {
+  border-color: var(--canvas-border);
+  background: var(--canvas-banner-bg);
+}
+
+.archflow-layout-banner {
+  animation: archflow-slide-up 0.25s ease-out;
+}
+
+.archflow-canvas .react-flow__edge-path {
+  transition:
+    stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.2s ease;
+}
+
+.react-flow__node {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.react-flow__pane {
+  cursor: default;
+}
+
+.react-flow__pane.draggable {
+  cursor: grab;
+}
+
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.react-flow__minimap {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--yash-border);
+  background: var(--yash-surface);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
