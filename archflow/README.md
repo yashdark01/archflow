@@ -39,39 +39,27 @@ Drag   → Drop → Connect → Design
 ## Features
 
 ### Phase 1 — Canvas MVP ✅
-- ✅ Infinite zoomable/pannable canvas (React Flow)
-- ✅ 9 node types + Eraser icon palette
-- ✅ Custom labeled edges (bezier / straight / smoothstep) with inline canvas labels
-- ✅ Edge arrow directions (forward, backward, bidirectional, none)
-- ✅ Node & edge properties panel (resizable on desktop)
-- ✅ Undo / Redo (50-step history)
-- ✅ PNG export (white / transparent) + clipboard copy
-- ✅ Auto-save to localStorage with quota recovery
-- ✅ Keyboard shortcuts
-- ✅ Mobile read-only banner, error boundary, loading skeleton
+- Infinite zoomable/pannable canvas (React Flow)
+- Node types, Eraser icons, canvas text labels, drag-and-drop palette
+- L-shape / curve / straight edges, line controls, bend handles
+- Properties panel (resizable desktop, sheet on mobile), auto-open on selection
+- Undo/redo, copy/paste, context menu, keyboard shortcuts
+- PNG export, localStorage auto-save, mobile banner, error boundary
 
 ### Phase 2 — Diagram-as-Code ✅
-- ✅ Monaco Mermaid editor + live SVG preview
-- ✅ Two-way sync: canvas ↔ Mermaid (`graph LR` / `graph TD`)
-- ✅ Eraser DSL mode (toggle in code panel)
-- ✅ Sync status badge + copy snippet
-- ✅ Vitest round-trip tests
+- Code sheet (`Ctrl+/`) with Monaco Mermaid editor + live preview
+- Two-way sync: canvas ↔ Mermaid; Eraser DSL mode with validation
+- Copy snippet, sync badge, onboarding tip, Vitest round-trip tests
 
-### Phase 3 — Auth + Persistence
-- ✅ NextAuth.js authentication (Google + Email)
-- ✅ Save diagrams to PostgreSQL via Prisma
-- ✅ Dashboard — list, rename, delete, duplicate diagrams
-- ✅ Auto-save to DB on change (debounced)
+### Phase 3 — Auth + Persistence 📋 Planned
+- UI shells for login, register, and dashboard (localStorage today)
+- API routes and Prisma schema — **not yet implemented**
 
-### Phase 4 — AI Generation
-- ✅ Prompt → diagram (Claude API)
-- ✅ AI explains selected node
-- ✅ Streaming response UI
+### Phase 4 — AI Generation 📋 Planned
+- API route stubs only; toolbar AI buttons disabled
 
-### Phase 5 — Sharing + Templates
-- ✅ Shareable read-only links
-- ✅ Template gallery (microservices, monolith, event-driven, CQRS)
-- ✅ Embed diagrams via iframe
+### Phase 5 — Sharing + Templates 📋 Planned
+- Shared view placeholder; share/templates not yet implemented
 
 ---
 

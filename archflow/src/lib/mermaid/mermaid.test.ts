@@ -86,6 +86,26 @@ describe("parseMermaid", () => {
     expect(again.snapshot.edges.length).toBe(initial.snapshot.edges.length);
   });
 
+  it("round-trips a 50-node graph structure", () => {
+    const nodes = Array.from({ length: 50 }, (_, i) =>
+      makeNode(`n${i}`, `Service ${i}`, "service"),
+    );
+    const edges: DiagramEdge[] = Array.from({ length: 49 }, (_, i) => ({
+      id: `e${i}`,
+      source: `n${i}`,
+      target: `n${i + 1}`,
+      type: "step",
+      data: { label: "", color: "#64748b", arrowDirection: "forward" },
+    }));
+
+    const code = flowToMermaid(nodes, edges, "LR");
+    const parsed = parseMermaid(code);
+    if (!("snapshot" in parsed)) throw new Error("parse failed");
+
+    expect(parsed.snapshot.nodes.length).toBe(50);
+    expect(parsed.snapshot.edges.length).toBe(49);
+  });
+
   it("returns error for invalid syntax", () => {
     const result = parseMermaid("graph LR\n  ??? invalid");
     expect("message" in result && !("snapshot" in result)).toBe(true);

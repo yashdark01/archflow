@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { CodePanel } from "@/components/code-panel/CodePanel";
 import { LayoutContextBanner } from "@/components/editor/LayoutContextBanner";
 import { MobileEditorBanner } from "@/components/editor/MobileEditorBanner";
@@ -12,20 +12,29 @@ import { CodeSheet } from "@/components/editor/CodeSheet";
 import { DocumentPanel } from "@/components/editor/DocumentPanel";
 import { EditorTopBar } from "@/components/editor/EditorTopBar";
 import { PropertiesSheet } from "@/components/editor/PropertiesSheet";
+import { PropertiesPanel } from "@/components/properties/PropertiesPanel";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useEraserSync } from "@/hooks/useEraserSync";
 import { useLayoutControl } from "@/hooks/useLayoutControl";
 import { useMermaidSync } from "@/hooks/useMermaidSync";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deselectAll, pasteNodes, selectAll } from "@/store/slices/diagramSlice";
-import { setPropertiesPanelOpen } from "@/store/slices/uiSlice";
+import {
+  setCodeSheetOpen,
+  setInsertPickerOpen,
+  setPropertiesPanelOpen,
+  setPropertiesPanelWidth,
+  setSidebarOpen,
+} from "@/store/slices/uiSlice";
 
 interface EditorShellProps {
   diagramId: string;
@@ -45,46 +54,70 @@ function CanvasArea({
   onProperties: () => void;
 }) {
   const dispatch = useAppDispatch();
+  const propertiesPanelOpen = useAppSelector((state) => state.ui.propertiesPanelOpen);
+  const propertiesPanelWidth = useAppSelector((state) => state.ui.propertiesPanelWidth);
+  const selectedNodeId = useAppSelector((state) => state.ui.selectedNodeId);
+  const selectedEdgeId = useAppSelector((state) => state.ui.selectedEdgeId);
+  const isLg = useMediaQuery("(min-width: 1024px)");
+  const hasSelection = Boolean(selectedNodeId || selectedEdgeId);
 
   return (
-    <main className="editor-canvas-area relative h-full min-h-0 w-full flex-1 bg-[#141416]">
-      <CanvasInsertLayer onCode={onCode} onProperties={onProperties} />
-      <ContextMenu>
-        <ContextMenuTrigger className="block h-full w-full">
-          <CanvasErrorBoundary>
-            <CanvasWrapper />
-          </CanvasErrorBoundary>
-          <CanvasEmptyState />
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            disabled={copiedNodes.length === 0}
-            onClick={() => dispatch(pasteNodes({ nodes: copiedNodes }))}
-          >
-            Paste
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => dispatch(selectAll())}>
-            Select all
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => dispatch(deselectAll())}>
-            Deselect all
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-      <LayoutContextBanner onAutoLayout={onAutoLayout} onResetLayout={onResetLayout} />
-    </main>
+    <div className="flex h-full min-h-0 w-full flex-1">
+      <main className="editor-canvas-area relative h-full min-h-0 min-w-0 flex-1 bg-[#141416]">
+        <CanvasInsertLayer onCode={onCode} onProperties={onProperties} />
+        <ContextMenu>
+          <ContextMenuTrigger className="block h-full w-full">
+            <CanvasErrorBoundary>
+              <CanvasWrapper />
+            </CanvasErrorBoundary>
+            <CanvasEmptyState />
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={() => dispatch(setInsertPickerOpen(true))}>
+              Insert item…
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => dispatch(setSidebarOpen(true))}>
+              Open drag palette
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              disabled={copiedNodes.length === 0}
+              onClick={() => dispatch(pasteNodes({ nodes: copiedNodes }))}
+            >
+              Paste
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => dispatch(selectAll())}>
+              Select all
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => dispatch(deselectAll())}>
+              Deselect all
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+        <LayoutContextBanner onAutoLayout={onAutoLayout} onResetLayout={onResetLayout} />
+      </main>
+
+      {isLg ? (
+        <PropertiesPanel
+          open={propertiesPanelOpen && hasSelection}
+          width={propertiesPanelWidth}
+          onClose={() => dispatch(setPropertiesPanelOpen(false))}
+          onResize={(width) => dispatch(setPropertiesPanelWidth(width))}
+        />
+      ) : null}
+    </div>
   );
 }
 
 export function EditorShell({ diagramId }: EditorShellProps) {
   const dispatch = useAppDispatch();
   const propertiesPanelOpen = useAppSelector((state) => state.ui.propertiesPanelOpen);
+  const codeSheetOpen = useAppSelector((state) => state.ui.codeSheetOpen);
   const editorViewMode = useAppSelector((state) => state.ui.editorViewMode);
   const codeDialect = useAppSelector((state) => state.ui.codeDialect);
   const mermaidCode = useAppSelector((state) => state.ui.mermaidCode);
   const copiedNodes = useAppSelector((state) => state.ui.copiedNodes);
-
-  const [codeSheetOpen, setCodeSheetOpen] = useState(false);
+  const isLg = useMediaQuery("(min-width: 1024px)");
 
   const { applyCodeFromEditor } = useEraserSync();
   const { runAutoLayout, resetFromCode, selectDiagram } = useLayoutControl();
@@ -111,15 +144,12 @@ export function EditorShell({ diagramId }: EditorShellProps) {
     />
   );
 
-  const openCode = () => setCodeSheetOpen(true);
+  const openCode = () => dispatch(setCodeSheetOpen(true));
   const openProperties = () => dispatch(setPropertiesPanelOpen(true));
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col bg-background">
-      <EditorTopBar
-        onPropertiesClick={openProperties}
-        onCodeClick={openCode}
-      />
+      <EditorTopBar onPropertiesClick={openProperties} onCodeClick={openCode} />
       <MobileEditorBanner />
 
       <div className="flex min-h-0 flex-1 overflow-hidden w-full">
@@ -147,24 +177,27 @@ export function EditorShell({ diagramId }: EditorShellProps) {
         ) : null}
 
         {editorViewMode === "canvas" ? (
-          <div className="relative flex h-full min-h-0 w-full flex-1 flex-col">
-            <CanvasArea
-              copiedNodes={copiedNodes}
-              onAutoLayout={runAutoLayout}
-              onResetLayout={resetFromCode}
-              onCode={openCode}
-              onProperties={openProperties}
-            />
-          </div>
+          <CanvasArea
+            copiedNodes={copiedNodes}
+            onAutoLayout={runAutoLayout}
+            onResetLayout={resetFromCode}
+            onCode={openCode}
+            onProperties={openProperties}
+          />
         ) : null}
       </div>
 
-      <PropertiesSheet
-        open={propertiesPanelOpen}
-        onOpenChange={(open) => dispatch(setPropertiesPanelOpen(open))}
-      />
+      {!isLg ? (
+        <PropertiesSheet
+          open={propertiesPanelOpen}
+          onOpenChange={(open) => dispatch(setPropertiesPanelOpen(open))}
+        />
+      ) : null}
 
-      <CodeSheet open={codeSheetOpen} onOpenChange={setCodeSheetOpen}>
+      <CodeSheet
+        open={codeSheetOpen}
+        onOpenChange={(open) => dispatch(setCodeSheetOpen(open))}
+      >
         {codePanel}
       </CodeSheet>
     </div>

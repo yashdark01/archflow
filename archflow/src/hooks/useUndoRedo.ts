@@ -12,7 +12,7 @@ import {
   undo,
   redo,
 } from "@/store/slices/diagramSlice";
-import { setCopiedNodes, setEditorViewMode } from "@/store/slices/uiSlice";
+import { setCopiedNodes, setEditorViewMode, toggleCodeSheet } from "@/store/slices/uiSlice";
 
 export function useUndoRedo() {
   const dispatch = useAppDispatch();
@@ -90,13 +90,17 @@ export function useUndoRedo() {
 
       if (isModKey(event) && event.key === "/") {
         event.preventDefault();
-        const next =
-          editorViewMode === "both"
-            ? "canvas"
-            : editorViewMode === "canvas"
-              ? "document"
-              : "both";
-        dispatch(setEditorViewMode(next));
+        if (event.shiftKey) {
+          const next =
+            editorViewMode === "both"
+              ? "canvas"
+              : editorViewMode === "canvas"
+                ? "document"
+                : "both";
+          dispatch(setEditorViewMode(next));
+        } else {
+          dispatch(toggleCodeSheet());
+        }
         return;
       }
 

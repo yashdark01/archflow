@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { CodeEditorPanel } from "@/components/editor/CodeEditorPanel";
+import { CodePanelOnboarding } from "@/components/code-panel/CodePanelOnboarding";
 import { CodeSyncBadge } from "@/components/code-panel/CodeSyncBadge";
 import { CodePanelViewTabs } from "@/components/code-panel/CodePanelViewTabs";
 import { MermaidEditor } from "@/components/code-panel/MermaidEditor";
@@ -87,6 +88,7 @@ export function CodePanel({
       </div>
 
       <div className="relative min-h-0 flex-1">
+        <CodePanelOnboarding />
         {dialect === "eraser" ? (
           <>
             {showCode ? (

@@ -15,7 +15,8 @@ export const KEYBOARD_SHORTCUTS: ShortcutConfig[] = [
   { keys: "Ctrl+D", label: "Duplicate", action: "duplicate" },
   { keys: "Ctrl+E", label: "Export PNG", action: "export" },
   { keys: "Ctrl+0", label: "Fit view", action: "fitView" },
-  { keys: "Ctrl+/", label: "Toggle view mode", action: "toggleView" },
+  { keys: "Ctrl+/", label: "Toggle diagram-as-code panel", action: "toggleCode" },
+  { keys: "Ctrl+Shift+/", label: "Cycle document / canvas view", action: "toggleView" },
 ];
 
 export function isModKey(event: KeyboardEvent): boolean {

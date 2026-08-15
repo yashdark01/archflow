@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { EraserIcon } from "@/components/icons/EraserIcon";
+import { DraggablePaletteItem } from "@/components/sidebar/DraggablePaletteItem";
 import { NODE_DEFAULTS } from "@/constants/nodeDefaults";
 import { useEraserCatalog } from "@/hooks/useEraserCatalog";
 import {
@@ -213,9 +214,10 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
                       const globalIdx = flatSearchList.indexOf(item);
                       const isFocused = globalIdx === focusIndex;
                       return (
-                        <button
+                        <DraggablePaletteItem
                           key={item.id}
-                          type="button"
+                          iconId={item.kind === "icon" ? item.iconId : undefined}
+                          nodeType={item.kind === "node" ? item.nodeType : undefined}
                           onClick={() => selectItem(item)}
                           className={cn(
                             "flex flex-col items-center gap-1 rounded-lg border p-2 transition-colors",
@@ -238,7 +240,7 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
                           <span className="w-full truncate text-center text-[9px] text-muted-foreground">
                             {item.label}
                           </span>
-                        </button>
+                        </DraggablePaletteItem>
                       );
                     })}
                   </div>
@@ -308,18 +310,18 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
                 </div>
                 <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5">
                   {iconPool.slice(0, 40).map((icon) => (
-                    <button
+                    <DraggablePaletteItem
                       key={icon.id}
-                      type="button"
-                      title={icon.id}
+                      iconId={icon.id}
                       onClick={() => selectIconId(icon.id)}
+                      title={icon.id}
                       className="flex flex-col items-center gap-1 rounded-lg border border-transparent p-2 hover:border-white/15 hover:bg-white/5"
                     >
                       <EraserIcon iconId={icon.id} size={24} />
                       <span className="w-full truncate text-center text-[9px] text-muted-foreground">
                         {icon.id.replace(/^(aws|gcp|azure|k8s)-/, "").slice(0, 10)}
                       </span>
-                    </button>
+                    </DraggablePaletteItem>
                   ))}
                 </div>
               </>
@@ -331,7 +333,7 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
       <div className="flex items-center justify-between border-t border-white/10 px-3 py-2 text-[10px] text-muted-foreground">
         <span className="truncate font-mono">{focusedId ?? "—"}</span>
         <span className="shrink-0">
-          {isSearching ? "↑↓ navigate · enter to insert" : "Click to pick · click canvas to place"}
+          {isSearching ? "↑↓ navigate · enter to place · drag to canvas" : "Click or drag onto canvas"}
         </span>
       </div>
     </div>

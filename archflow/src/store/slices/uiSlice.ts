@@ -37,6 +37,7 @@ interface UiState {
   propertiesPanelWidth: number;
   documentNotes: string;
   codePanelOpen: boolean;
+  codeSheetOpen: boolean;
   editorViewMode: EditorViewMode;
   eraserCode: string;
   codeDialect: CodeDialect;
@@ -75,6 +76,7 @@ const initialState: UiState = {
   propertiesPanelOpen: false,
   propertiesPanelWidth: 320,
   codePanelOpen: true,
+  codeSheetOpen: false,
   documentNotes: "",
   editorViewMode: "both",
   eraserCode: "",
@@ -155,6 +157,12 @@ const uiSlice = createSlice({
     },
     toggleCodePanel(state) {
       state.codePanelOpen = !state.codePanelOpen;
+    },
+    toggleCodeSheet(state) {
+      state.codeSheetOpen = !state.codeSheetOpen;
+    },
+    setCodeSheetOpen(state, action: PayloadAction<boolean>) {
+      state.codeSheetOpen = action.payload;
     },
     setEditorViewMode(state, action: PayloadAction<EditorViewMode>) {
       state.editorViewMode = action.payload;
@@ -264,6 +272,8 @@ export const {
   setPropertiesPanelOpen,
   setPropertiesPanelWidth,
   toggleCodePanel,
+  toggleCodeSheet,
+  setCodeSheetOpen,
   setEditorViewMode,
   setEraserCode,
   setCodeDialect,

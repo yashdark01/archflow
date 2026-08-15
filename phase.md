@@ -2,7 +2,7 @@
 
 > **Last updated:** August 2026  
 > **Author:** Yash Patidar  
-> **Status:** Active development plan  
+> **Status:** Phase 1 & 2 complete · Phase 3+ planned  
 > **Companion docs:** [product.md](./product.md) · [README.md](./README.md)
 
 ---
@@ -116,7 +116,7 @@ ArchFlow follows a **progressive responsive** model — not every surface is ful
 
 ### Tasks
 
-- [ ] Flatten or document nested `archflow/archflow/` layout — dev runs from app directory
+- [x] Flatten or document nested `archflow/archflow/` layout — dev runs from app directory
 - [ ] Configure Tailwind v4, fonts (Geist), CSS variables in `globals.css`
 - [ ] Build UI primitives: `Button`, `Input`, `Modal`, `Tooltip`, `Spinner`, `Badge`, `Dropdown`, `ContextMenu`
 - [ ] Create `cn()` utility (`clsx` + `tailwind-merge`)

@@ -36,6 +36,7 @@ import {
   setSelectedEdge,
   setSelectedNode,
   setLayoutManual,
+  setPropertiesPanelOpen,
 } from "@/store/slices/uiSlice";
 import { createEdge } from "@/utils/edgeFactory";
 
@@ -129,8 +130,10 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
     ({ nodes: selectedNodes, edges: selectedEdges }: OnSelectionChangeParams) => {
       if (selectedNodes.length === 1) {
         dispatch(setSelectedNode(selectedNodes[0].id));
+        dispatch(setPropertiesPanelOpen(true));
       } else if (selectedEdges.length === 1) {
         dispatch(setSelectedEdge(selectedEdges[0].id));
+        dispatch(setPropertiesPanelOpen(true));
       } else if (selectedNodes.length === 0 && selectedEdges.length === 0) {
         dispatch(setSelectedNode(null));
         dispatch(setSelectedEdge(null));

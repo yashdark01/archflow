@@ -56,6 +56,17 @@ export function EditorTopBar({ onPropertiesClick, onCodeClick }: EditorTopBarPro
         {saveStatus === "saving" ? (
           <span className="hidden text-[10px] text-muted-foreground sm:inline">Saving…</span>
         ) : null}
+        {saveStatus === "saved" ? (
+          <span className="hidden text-[10px] text-muted-foreground sm:inline">Saved</span>
+        ) : null}
+        {saveStatus === "unsaved" ? (
+          <span className="hidden text-[10px] text-amber-600 dark:text-amber-400 sm:inline">
+            Unsaved
+          </span>
+        ) : null}
+        {saveStatus === "error" ? (
+          <span className="hidden text-[10px] text-destructive sm:inline">Save error</span>
+        ) : null}
       </div>
 
       <div className="flex flex-1 justify-center px-2">

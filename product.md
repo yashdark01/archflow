@@ -650,11 +650,11 @@ What makes ArchFlow different from every tool above:
 
 | Phase | Features | Timeline | Status |
 |---|---|---|---|
-| **Phase 1** | Canvas, Nodes, Edges, Properties, Undo/Redo, Export, LocalStorage | Weeks 1–3 | 🔨 In Progress |
-| **Phase 2** | Monaco Editor, Mermaid Sync, Code Panel | Weeks 4–5 | 📋 Planned |
-| **Phase 3** | Auth, PostgreSQL, Dashboard, Auto-save to DB | Week 6 | 📋 Planned |
-| **Phase 4** | AI Generation, AI Explain, Streaming UI | Week 7 | 📋 Planned |
-| **Phase 5** | Share Links, Templates, Embed | Week 8 | 📋 Planned |
+| **Phase 1** | Canvas, Nodes, Edges, Properties, Undo/Redo, Export, LocalStorage | Weeks 1–4 | ✅ Complete |
+| **Phase 2** | Monaco Editor, Mermaid + Eraser Sync, Code Panel | Weeks 5–6 | ✅ Complete |
+| **Phase 3** | Auth, PostgreSQL, Dashboard, Auto-save to DB | Weeks 7–8 | 📋 Planned |
+| **Phase 4** | Share Links, Templates, Embed | Weeks 9–10 | 📋 Planned |
+| **Phase 5** | AI Generation, AI Explain, Streaming UI | Weeks 11–13 | 📋 Planned |
 | **Phase 6** | GitHub Import, Community Templates | TBD | 💭 Idea |
 | **Phase 7** | Real-time Collaboration (WebSockets) | TBD | 💭 Idea |
 | **Phase 8** | VS Code Extension | TBD | 💭 Idea |
