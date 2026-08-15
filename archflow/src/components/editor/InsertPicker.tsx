@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronRight,
-  Code2,
   Search,
   Sparkles,
   X,
@@ -25,26 +24,18 @@ import {
   startPlacement,
   type InsertPickerView,
 } from "@/store/slices/uiSlice";
-import type { NodeType } from "@/types/diagram";
 import { cn } from "@/lib/utils";
 
 interface InsertPickerProps {
   focusSearch?: boolean;
-  onOpenCode?: () => void;
 }
 
 const ROOT_CATEGORIES: {
-  id: InsertPickerView | "code";
+  id: InsertPickerView;
   label: string;
   description: string;
   icon: LucideIcon;
 }[] = [
-  {
-    id: "code",
-    label: "Diagram as code",
-    description: "Create diagrams using code",
-    icon: Code2,
-  },
   {
     id: "icons",
     label: "Icon",
@@ -53,7 +44,7 @@ const ROOT_CATEGORIES: {
   },
 ];
 
-export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
+export function InsertPicker({ focusSearch }: InsertPickerProps) {
   const dispatch = useAppDispatch();
   const open = useAppSelector((state) => state.ui.insertPickerOpen);
   const view = useAppSelector((state) => state.ui.insertPickerView);
@@ -102,13 +93,6 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
     [dispatch],
   );
 
-  const selectNodeType = useCallback(
-    (nodeType: NodeType) => {
-      dispatch(startPlacement({ kind: "node", nodeType }));
-    },
-    [dispatch],
-  );
-
   const selectIconId = useCallback(
     (iconId: string) => {
       dispatch(startPlacement({ kind: "icon", iconId }));
@@ -116,12 +100,7 @@ export function InsertPicker({ focusSearch, onOpenCode }: InsertPickerProps) {
     [dispatch],
   );
 
-  const handleCategoryClick = (id: InsertPickerView | "code") => {
-    if (id === "code") {
-      close();
-      onOpenCode?.();
-      return;
-    }
+  const handleCategoryClick = (id: InsertPickerView) => {
     dispatch(setInsertPickerView(id));
     setFocusIndex(0);
   };

@@ -1,4 +1,10 @@
 import type { Edge, Node } from "reactflow";
+import type {
+  EraserColorMode,
+  EraserConnector,
+  EraserStyleMode,
+  EraserTypeface,
+} from "@/lib/canvas/schema";
 
 export type NodeType =
   | "service"
@@ -32,6 +38,11 @@ export interface NodeData extends Record<string, unknown> {
   icon?: string;
   /** Unique Eraser diagram-as-code identifier (used in connections). */
   eraserName?: string;
+  /** Eraser node styling — https://docs.eraser.io/styling */
+  colorMode?: EraserColorMode;
+  styleMode?: EraserStyleMode;
+  typeface?: EraserTypeface;
+  link?: string;
 }
 
 export interface EdgeData extends Record<string, unknown> {
@@ -40,6 +51,8 @@ export interface EdgeData extends Record<string, unknown> {
   arrowDirection: ArrowDirection;
   strokeWidth?: number;
   strokeStyle?: EdgeStrokeStyle;
+  /** Eraser connector token when sourced from DSL. */
+  connector?: EraserConnector;
   /** Custom bend vertex in flow coordinates (L-shape / routed paths). */
   bendPoint?: { x: number; y: number };
 }

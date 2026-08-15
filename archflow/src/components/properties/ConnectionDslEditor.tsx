@@ -114,6 +114,8 @@ export function ConnectionDslEditor({ edgeId }: ConnectionDslEditorProps) {
           label: conn.label ?? "",
           color,
           arrowDirection: conn.arrowDirection,
+          strokeStyle: conn.strokeStyle,
+          connector: conn.connector,
         },
       }),
     );
@@ -147,7 +149,9 @@ export function ConnectionDslEditor({ edgeId }: ConnectionDslEditorProps) {
         Examples: <code className="text-foreground">A &gt; B</code>,{" "}
         <code className="text-foreground">A &lt; B</code>,{" "}
         <code className="text-foreground">A &lt;&gt; B</code>,{" "}
-        <code className="text-foreground">A - B: label</code>
+        <code className="text-foreground">A - B</code>,{" "}
+        <code className="text-foreground">A -- B</code>,{" "}
+        <code className="text-foreground">A --&gt; B: label</code>
       </p>
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
       <div className="flex gap-2">

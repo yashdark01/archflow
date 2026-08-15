@@ -23,7 +23,7 @@ export function CanvasControls() {
   const snapToGrid = useAppSelector((state) => state.ui.snapToGrid);
 
   return (
-    <div className="canvas-control-surface panel-chrome absolute bottom-3 left-3 z-10 flex items-center gap-0.5 p-1">
+    <div className="canvas-control-surface absolute bottom-3 left-3 z-10 flex items-center gap-0.5 p-1">
       <Tooltip>
         <TooltipTrigger
           render={

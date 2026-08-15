@@ -1,12 +1,23 @@
 "use client";
 
 import { COLOR_PRESETS } from "@/constants/nodeDefaults";
-import { DEFAULT_EDGE_COLOR, CONNECTION_STYLE_OPTIONS, DEFAULT_EDGE_TYPE } from "@/constants/edgeDefaults";
+import {
+  CONNECTION_STYLE_OPTIONS,
+  DEFAULT_EDGE_COLOR,
+  DEFAULT_EDGE_TYPE,
+  EDGE_STROKE_STYLES,
+} from "@/constants/edgeDefaults";
 import { ConnectionDslEditor } from "@/components/properties/ConnectionDslEditor";
 import { EdgeLabelEditor } from "@/components/canvas/edges/EdgeLabel";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateEdgeData, updateEdgeType } from "@/store/slices/diagramSlice";
 import type { ArrowDirection, EdgeData, EdgeType } from "@/types/diagram";
+import {
+  ERASER_CONNECTOR_OPTIONS,
+  connectorFromEdgeData,
+  edgeDataFromConnector,
+} from "@/lib/canvas/style/edgeDesign";
+import type { EraserConnector } from "@/lib/canvas/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,6 +82,54 @@ export function EdgeProperties({ edgeId }: EdgePropertiesProps) {
       </div>
 
       <div className="space-y-2">
+        <Label>Eraser connector</Label>
+        <Select
+          value={
+            (data.connector ??
+              connectorFromEdgeData(
+                data.arrowDirection,
+                data.strokeStyle,
+              )) as EraserConnector
+          }
+          onValueChange={(value) => {
+            const attrs = edgeDataFromConnector(value as EraserConnector);
+            dispatch(
+              updateEdgeData({
+                id: edgeId,
+                data: {
+                  connector: attrs.connector,
+                  arrowDirection: attrs.arrowDirection,
+                  strokeStyle: attrs.strokeStyle,
+                },
+              }),
+            );
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ERASER_CONNECTOR_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          {ERASER_CONNECTOR_OPTIONS.find(
+            (o) =>
+              o.value ===
+              (data.connector ??
+                connectorFromEdgeData(
+                  data.arrowDirection,
+                  data.strokeStyle,
+                )),
+          )?.description ?? "DSL connector token"}
+        </p>
+      </div>
+
+      <div className="space-y-2">
         <Label>Arrow</Label>
         <Select
           value={data.arrowDirection}
@@ -96,6 +155,36 @@ export function EdgeProperties({ edgeId }: EdgePropertiesProps) {
       </div>
 
       <ConnectionDslEditor edgeId={edgeId} />
+
+      <div className="space-y-2">
+        <Label>Line pattern</Label>
+        <Select
+          value={data.strokeStyle ?? "solid"}
+          onValueChange={(value) =>
+            dispatch(
+              updateEdgeData({
+                id: edgeId,
+                data: { strokeStyle: value as EdgeData["strokeStyle"] },
+              }),
+            )
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {EDGE_STROKE_STYLES.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          Dashed is canvas-only; Eraser DSL uses dotted (<code>--</code>,{" "}
+          <code>--&gt;</code>).
+        </p>
+      </div>
 
       {data.bendPoint ? (
         <Button

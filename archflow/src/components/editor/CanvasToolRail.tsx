@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Circle,
-  Code2,
   Frame,
   MessageSquare,
   MousePointer2,
@@ -16,7 +15,6 @@ import {
   Pencil,
   Plus,
   Search,
-  Sparkles,
   Square,
   Type,
 } from "lucide-react";
@@ -25,7 +23,6 @@ import { cn } from "@/lib/utils";
 interface CanvasToolRailProps {
   onInsert: () => void;
   onSearchInsert?: () => void;
-  onCode?: () => void;
   onProperties?: () => void;
   onText?: () => void;
   placementActive?: boolean;
@@ -35,10 +32,9 @@ const TOOLS: {
   icon: typeof MousePointer2;
   label: string;
   shortcut?: string;
-  action?: "insert" | "search" | "code" | "properties" | "text";
+  action?: "insert" | "search" | "properties" | "text";
 }[] = [
   { icon: Plus, label: "Insert item", action: "insert" },
-  { icon: Sparkles, label: "Generate AI", shortcut: "⌘J" },
   { icon: MousePointer2, label: "Select", shortcut: "V" },
   { icon: Square, label: "Rectangle", shortcut: "R" },
   { icon: Circle, label: "Circle", shortcut: "O" },
@@ -47,14 +43,12 @@ const TOOLS: {
   { icon: Type, label: "Text", shortcut: "T", action: "text" },
   { icon: Search, label: "Search & insert", shortcut: "Q", action: "search" },
   { icon: Frame, label: "Frame", shortcut: "F" },
-  { icon: MessageSquare, label: "Comment", shortcut: "C", action: "properties" },
-  { icon: Code2, label: "Diagram as code", action: "code" },
+  { icon: MessageSquare, label: "Properties", action: "properties" },
 ];
 
 export function CanvasToolRail({
   onInsert,
   onSearchInsert,
-  onCode,
   onProperties,
   onText,
   placementActive,
@@ -62,7 +56,6 @@ export function CanvasToolRail({
   const handleAction = (action?: string) => {
     if (action === "insert") onInsert();
     if (action === "search") onSearchInsert?.();
-    if (action === "code") onCode?.();
     if (action === "properties") onProperties?.();
     if (action === "text") onText?.();
   };

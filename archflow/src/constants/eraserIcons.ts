@@ -4,8 +4,19 @@ export const ERASER_ICON_CDN =
 
 export const ERASER_CATALOG_PATH = "/icons/eraser-catalog.json";
 
+/** Decode HTML entities sometimes scraped into catalog ids (e.g. `&#38;` → `&`). */
+export function normalizeEraserIconId(iconId: string): string {
+  return iconId
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) =>
+      String.fromCharCode(parseInt(h, 16)),
+    )
+    .replace(/&amp;/g, "&");
+}
+
 export function getEraserIconUrl(iconId: string): string {
-  return `${ERASER_ICON_CDN}/${iconId}.svg`;
+  const normalized = normalizeEraserIconId(iconId);
+  return `${ERASER_ICON_CDN}/${encodeURIComponent(normalized)}.svg`;
 }
 
 /** Default Eraser icon slugs per ArchFlow node type (Eraser diagram-as-code names). */

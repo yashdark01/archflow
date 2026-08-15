@@ -12,14 +12,13 @@ import {
   undo,
   redo,
 } from "@/store/slices/diagramSlice";
-import { setCopiedNodes, setEditorViewMode, toggleCodeSheet } from "@/store/slices/uiSlice";
+import { setCopiedNodes } from "@/store/slices/uiSlice";
 
 export function useUndoRedo() {
   const dispatch = useAppDispatch();
   const nodes = useAppSelector((state) => state.diagram.nodes);
   const edges = useAppSelector((state) => state.diagram.edges);
   const copiedNodes = useAppSelector((state) => state.ui.copiedNodes);
-  const editorViewMode = useAppSelector((state) => state.ui.editorViewMode);
   const { exportPng } = useExport();
 
   useEffect(() => {
@@ -88,22 +87,6 @@ export function useUndoRedo() {
         return;
       }
 
-      if (isModKey(event) && event.key === "/") {
-        event.preventDefault();
-        if (event.shiftKey) {
-          const next =
-            editorViewMode === "both"
-              ? "canvas"
-              : editorViewMode === "canvas"
-                ? "document"
-                : "both";
-          dispatch(setEditorViewMode(next));
-        } else {
-          dispatch(toggleCodeSheet());
-        }
-        return;
-      }
-
       if (isModKey(event) && event.key === "0") {
         event.preventDefault();
         window.dispatchEvent(new Event("archflow:fit-view"));
@@ -122,5 +105,5 @@ export function useUndoRedo() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [copiedNodes, dispatch, edges, editorViewMode, exportPng, nodes]);
+  }, [copiedNodes, dispatch, edges, exportPng, nodes]);
 }

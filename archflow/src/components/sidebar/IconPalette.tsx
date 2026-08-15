@@ -13,7 +13,7 @@ export function IconPalette() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("aws-icons");
 
-  const categories = catalog?.categories ?? [];
+  const categories = useMemo(() => catalog?.categories ?? [], [catalog]);
 
   const filteredIcons = useMemo(() => {
     const normalized = query.trim().toLowerCase();

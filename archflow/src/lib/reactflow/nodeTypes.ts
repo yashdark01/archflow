@@ -1,15 +1,15 @@
 import type { NodeTypes } from "reactflow";
-import { ArchflowNode } from "@/components/nodes/BaseNode";
+import { CanvasNode } from "@/components/canvas/nodes/CanvasNode";
 
 export const nodeTypes: NodeTypes = {
-  service: ArchflowNode,
-  database: ArchflowNode,
-  cache: ArchflowNode,
-  queue: ArchflowNode,
-  apiGateway: ArchflowNode,
-  loadBalancer: ArchflowNode,
-  user: ArchflowNode,
-  group: ArchflowNode,
-  cloud: ArchflowNode,
-  text: ArchflowNode,
+  service: CanvasNode,
+  database: CanvasNode,
+  cache: CanvasNode,
+  queue: CanvasNode,
+  apiGateway: CanvasNode,
+  loadBalancer: CanvasNode,
+  user: CanvasNode,
+  group: CanvasNode,
+  cloud: CanvasNode,
+  text: CanvasNode,
 };

@@ -55,7 +55,7 @@ export function LayoutContextBanner({
 
   return (
     <div
-      className="archflow-layout-banner pointer-events-auto absolute bottom-4 left-1/2 z-20 flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-full border border-[var(--canvas-border)] bg-[var(--canvas-banner-bg)] px-3 py-1.5 shadow-md"
+      className="archflow-layout-banner panel-chrome pointer-events-auto absolute bottom-4 left-1/2 z-20 flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-full px-3 py-1.5 shadow-md"
     >
       <span className="hidden text-xs text-[var(--canvas-text-muted)] sm:inline">
         {hint}

@@ -7,6 +7,12 @@ import {
   EDGE_STROKE_STYLES,
   EDGE_STROKE_WEIGHTS,
 } from "@/constants/edgeDefaults";
+import {
+  ERASER_CONNECTOR_OPTIONS,
+  connectorFromEdgeData,
+  edgeDataFromConnector,
+} from "@/lib/canvas/style/edgeDesign";
+import type { EraserConnector } from "@/lib/canvas/schema";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -100,6 +106,19 @@ export function ConnectionStyleBar() {
       dispatch(updateEdgeData({ id: selectedEdgeId, data: patch }));
     }
   };
+
+  const applyConnector = (connector: EraserConnector) => {
+    const attrs = edgeDataFromConnector(connector);
+    applyEdgePatch({
+      connector: attrs.connector,
+      arrowDirection: attrs.arrowDirection,
+      strokeStyle: attrs.strokeStyle,
+    });
+  };
+
+  const currentConnector =
+    edgeData.connector ??
+    connectorFromEdgeData(currentArrow, currentStrokeStyle);
 
   const applyArrow = (direction: ArrowDirection) => {
     applyEdgePatch({ arrowDirection: direction });
@@ -259,6 +278,15 @@ export function ConnectionStyleBar() {
           }
         />
         <DropdownMenuContent align="center">
+          {ERASER_CONNECTOR_OPTIONS.map((option) => (
+            <DropdownMenuItem
+              key={option.value}
+              onClick={() => applyConnector(option.value)}
+              className={cn(currentConnector === option.value && "bg-accent")}
+            >
+              <span>{option.label}</span>
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuItem
             onClick={() => applyArrow("bidirectional")}
             className={cn(currentArrow === "bidirectional" && "bg-accent")}
@@ -268,7 +296,7 @@ export function ConnectionStyleBar() {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => applyArrow("none")}
-            className={cn(currentArrow === "none" && "bg-accent")}
+            className={cn(currentArrow === "none" && currentStrokeStyle === "solid" && "bg-accent")}
           >
             <Minus className="size-4" />
             Line only

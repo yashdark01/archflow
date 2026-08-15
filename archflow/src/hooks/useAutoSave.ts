@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loadDiagram } from "@/store/slices/diagramSlice";
+import { loadDiagram, loadCanvasDocument } from "@/store/slices/diagramSlice";
 import {
   setActiveArrowDirection,
   setActiveEdgeColor,
@@ -10,8 +11,8 @@ import {
   setActiveStrokeStyle,
   setActiveStrokeWidth,
   setDiagramTitle,
-  setDocumentNotes,
   setEraserCode,
+  setLayoutManual,
   setMermaidCode,
   setSaveStatus,
 } from "@/store/slices/uiSlice";
@@ -23,12 +24,17 @@ import {
 import { DEFAULT_ERASER_CODE } from "@/lib/eraser/defaultCode";
 import { DEFAULT_MERMAID_CODE } from "@/lib/mermaid/defaultCode";
 import { diagramToDsl } from "@/lib/eraser/serialize";
+import { createCanvasDocumentFromDsl } from "@/lib/canvas";
+import { captureLayoutOverrides } from "@/lib/canvas/layout/overrides";
 import { flowToMermaid } from "@/lib/mermaid/flowToMermaid";
-import { parseMermaid } from "@/lib/mermaid/mermaidToFlow";
+import type { DiagramDetailResponse } from "@/types/api";
 import type { StoredDiagram } from "@/types/diagram";
 
 import { getDiagramStorageKey, DIAGRAM_STORAGE_PREFIX } from "@/lib/storage/diagramStorage";
+
 const MAX_STORED_DIAGRAMS = 12;
+const GUEST_SAVE_DEBOUNCE_MS = 1000;
+const AUTH_SAVE_DEBOUNCE_MS = 2000;
 
 function getStorageKey(diagramId: string): string {
   return getDiagramStorageKey(diagramId);
@@ -81,70 +87,136 @@ function resetLineDefaults(dispatch: ReturnType<typeof useAppDispatch>) {
   dispatch(setActiveStrokeStyle("solid"));
 }
 
+function applyStoredDiagram(
+  dispatch: ReturnType<typeof useAppDispatch>,
+  stored: StoredDiagram,
+) {
+  if (stored.eraserCode) {
+    const canvasDoc = createCanvasDocumentFromDsl(stored.eraserCode);
+    const overrides = captureLayoutOverrides(stored.nodes);
+    dispatch(
+      loadCanvasDocument({
+        document: canvasDoc.document,
+        layoutOverrides: overrides,
+      }),
+    );
+    dispatch(
+      setDiagramTitle(
+        canvasDoc.document.title ?? stored.title ?? "Untitled Diagram",
+      ),
+    );
+    dispatch(setLayoutManual(Object.keys(overrides).length > 0));
+    dispatch(setEraserCode(stored.eraserCode));
+  } else {
+    dispatch(loadDiagram({ nodes: stored.nodes, edges: stored.edges }));
+    if (stored.nodes.length > 0) {
+      dispatch(setEraserCode(diagramToDsl(stored.nodes, stored.edges, { title: stored.title })));
+    }
+  }
+
+  resetLineDefaults(dispatch);
+  dispatch(setDiagramTitle(stored.title));
+
+  if (stored.mermaidCode) {
+    dispatch(setMermaidCode(stored.mermaidCode));
+  } else if (stored.nodes.length > 0) {
+    dispatch(setMermaidCode(flowToMermaid(stored.nodes, stored.edges, "LR")));
+  }
+}
+
+function applyDefaultDiagram(dispatch: ReturnType<typeof useAppDispatch>) {
+  const canvasDoc = createCanvasDocumentFromDsl(DEFAULT_ERASER_CODE);
+  dispatch(loadCanvasDocument(canvasDoc));
+  dispatch(setDiagramTitle(canvasDoc.document.title ?? "Untitled Diagram"));
+  resetLineDefaults(dispatch);
+  dispatch(setMermaidCode(DEFAULT_MERMAID_CODE));
+  dispatch(setEraserCode(DEFAULT_ERASER_CODE));
+}
+
 export function useAutoSave(diagramId: string) {
   const dispatch = useAppDispatch();
+  const { status: authStatus } = useSession();
+  const isAuthenticated = authStatus === "authenticated";
+
   const nodes = useAppSelector((state) => state.diagram.nodes);
   const edges = useAppSelector((state) => state.diagram.edges);
   const title = useAppSelector((state) => state.ui.diagramTitle);
   const eraserCode = useAppSelector((state) => state.ui.eraserCode);
   const mermaidCode = useAppSelector((state) => state.ui.mermaidCode);
-  const documentNotes = useAppSelector((state) => state.ui.documentNotes);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
     if (!diagramId || diagramId === "new") return;
+    if (authStatus === "loading") return;
 
-    try {
-      const raw = localStorage.getItem(getStorageKey(diagramId));
-      if (raw) {
-        const stored = JSON.parse(raw) as StoredDiagram;
-        dispatch(loadDiagram({ nodes: stored.nodes, edges: stored.edges }));
-        resetLineDefaults(dispatch);
-        dispatch(setDiagramTitle(stored.title));
-        if (stored.documentNotes) {
-          dispatch(setDocumentNotes(stored.documentNotes));
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        if (isAuthenticated) {
+          const response = await fetch(`/api/diagrams/${diagramId}`);
+
+          if (response.ok) {
+            const stored = (await response.json()) as DiagramDetailResponse;
+            if (!cancelled) {
+              applyStoredDiagram(dispatch, stored);
+            }
+            return;
+          }
+
+          if (response.status === 404) {
+            if (!cancelled) {
+              applyDefaultDiagram(dispatch);
+            }
+            return;
+          }
+
+          if (!cancelled) {
+            dispatch(setSaveStatus("error"));
+          }
+          return;
         }
-        if (stored.eraserCode) {
-          dispatch(setEraserCode(stored.eraserCode));
-        } else if (stored.nodes.length > 0) {
-          dispatch(
-            setEraserCode(
-              diagramToDsl(stored.nodes, stored.edges, stored.title),
-            ),
-          );
+
+        const raw = localStorage.getItem(getStorageKey(diagramId));
+        if (raw) {
+          const stored = JSON.parse(raw) as StoredDiagram;
+          if (!cancelled) {
+            applyStoredDiagram(dispatch, stored);
+          }
+        } else if (!cancelled) {
+          applyDefaultDiagram(dispatch);
         }
-        if (stored.mermaidCode) {
-          dispatch(setMermaidCode(stored.mermaidCode));
-        } else if (stored.nodes.length > 0) {
-          dispatch(
-            setMermaidCode(flowToMermaid(stored.nodes, stored.edges, "LR")),
-          );
+      } catch {
+        if (!cancelled) {
+          dispatch(setSaveStatus("error"));
         }
-      } else {
-        const mermaidResult = parseMermaid(DEFAULT_MERMAID_CODE);
-        if ("snapshot" in mermaidResult) {
-          dispatch(loadDiagram(mermaidResult.snapshot));
+      } finally {
+        if (!cancelled) {
+          requestAnimationFrame(() => {
+            isFirstLoad.current = false;
+          });
         }
-        resetLineDefaults(dispatch);
-        dispatch(setMermaidCode(DEFAULT_MERMAID_CODE));
-        dispatch(setEraserCode(DEFAULT_ERASER_CODE));
       }
-    } catch {
-      dispatch(setSaveStatus("error"));
-    }
+    };
 
-    requestAnimationFrame(() => {
-      isFirstLoad.current = false;
-    });
-  }, [diagramId, dispatch]);
+    isFirstLoad.current = true;
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [diagramId, dispatch, isAuthenticated, authStatus]);
 
   useEffect(() => {
     if (!diagramId || diagramId === "new" || isFirstLoad.current) return;
+    if (authStatus === "loading") return;
 
     dispatch(setSaveStatus("unsaved"));
 
     if (timerRef.current) clearTimeout(timerRef.current);
+
+    const debounceMs = isAuthenticated ? AUTH_SAVE_DEBOUNCE_MS : GUEST_SAVE_DEBOUNCE_MS;
 
     timerRef.current = setTimeout(() => {
       dispatch(setSaveStatus("saving"));
@@ -156,9 +228,32 @@ export function useAutoSave(diagramId: string) {
         edges,
         eraserCode,
         mermaidCode,
-        documentNotes,
         updatedAt: new Date().toISOString(),
       };
+
+      if (isAuthenticated) {
+        fetch(`/api/diagrams/${diagramId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: payload.title,
+            nodes: payload.nodes,
+            edges: payload.edges,
+            eraserCode: payload.eraserCode,
+            mermaidCode: payload.mermaidCode,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Save failed");
+            }
+            dispatch(setSaveStatus("saved"));
+          })
+          .catch(() => {
+            dispatch(setSaveStatus("error"));
+          });
+        return;
+      }
 
       try {
         saveToStorage(diagramId, payload);
@@ -178,10 +273,20 @@ export function useAutoSave(diagramId: string) {
         }
         dispatch(setSaveStatus("error"));
       }
-    }, 1000);
+    }, debounceMs);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [diagramId, dispatch, documentNotes, edges, eraserCode, mermaidCode, nodes, title]);
+  }, [
+    diagramId,
+    dispatch,
+    edges,
+    eraserCode,
+    isAuthenticated,
+    authStatus,
+    mermaidCode,
+    nodes,
+    title,
+  ]);
 }

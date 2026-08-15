@@ -1,0 +1,21 @@
+// Data ETL Pipeline — https://docs.eraser.io/architecture-diagram-examples
+Input data sources {
+  Oracle [icon: oracle]
+  Twitter [icon: twitter]
+  Facebook [icon: facebook]
+}
+ETL pipeline [color: silver]{
+  User survey data [icon: kafka]
+  Data load [icon: aws-s3]
+  Data transformation [icon: databricks]
+  Data store [icon: snowflake]
+}
+Data destinations {
+  Notification [icon: slack]
+  Experimentation [icon: tensorflow]
+  BI dashboard [icon: tableau]
+}
+
+Oracle, Twitter, Facebook > User survey data
+User survey data > Data load > Data transformation > Data store
+Data store > Notification, Experimentation, BI dashboard

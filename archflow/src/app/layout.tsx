@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AuthSessionSync } from "@/components/auth/AuthSessionSync";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { StoreProvider } from "@/components/providers/StoreProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,7 +37,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex h-screen min-h-0 flex-col overflow-hidden bg-background text-foreground">
         <TooltipProvider>
           <StoreProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <AuthProvider>
+              <AuthSessionSync />
+              <ThemeProvider>{children}</ThemeProvider>
+            </AuthProvider>
           </StoreProvider>
         </TooltipProvider>
       </body>

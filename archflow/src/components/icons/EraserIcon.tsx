@@ -15,7 +15,7 @@ export function EraserIcon({
   alt,
 }: EraserIconProps) {
   return (
-    <img
+    <Image
       src={getEraserIconUrl(iconId)}
       alt={alt ?? iconId}
       width={size}
@@ -25,3 +25,4 @@ export function EraserIcon({
     />
   );
 }
+import Image from "next/image";
