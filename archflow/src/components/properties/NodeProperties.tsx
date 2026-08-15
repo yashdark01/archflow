@@ -3,7 +3,7 @@
 import { COLOR_PRESETS } from "@/constants/nodeDefaults";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateNodeData } from "@/store/slices/diagramSlice";
-import type { BorderStyle } from "@/types/diagram";
+import type { BorderStyle, NodeData } from "@/types/diagram";
 import { EraserIcon } from "@/components/icons/EraserIcon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -162,9 +162,116 @@ export function NodeProperties({ nodeId }: NodePropertiesProps) {
           <SelectContent>
             <SelectItem value="solid">Solid</SelectItem>
             <SelectItem value="dashed">Dashed</SelectItem>
-            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="none">None (icon-only)</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Fill mode</Label>
+        <Select
+          value={data.colorMode ?? "inherit"}
+          onValueChange={(value) =>
+            dispatch(
+              updateNodeData({
+                id: nodeId,
+                data: {
+                  colorMode:
+                    value === "inherit"
+                      ? undefined
+                      : (value as NodeData["colorMode"]),
+                },
+              }),
+            )
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Diagram default" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="inherit">Diagram default</SelectItem>
+            <SelectItem value="pastel">Pastel</SelectItem>
+            <SelectItem value="bold">Bold</SelectItem>
+            <SelectItem value="outline">Outline</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Style mode</Label>
+        <Select
+          value={data.styleMode ?? "inherit"}
+          onValueChange={(value) =>
+            dispatch(
+              updateNodeData({
+                id: nodeId,
+                data: {
+                  styleMode:
+                    value === "inherit"
+                      ? undefined
+                      : (value as NodeData["styleMode"]),
+                },
+              }),
+            )
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Diagram default" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="inherit">Diagram default</SelectItem>
+            <SelectItem value="shadow">Shadow</SelectItem>
+            <SelectItem value="plain">Plain</SelectItem>
+            <SelectItem value="watercolor">Watercolor</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Typeface</Label>
+        <Select
+          value={data.typeface ?? "inherit"}
+          onValueChange={(value) =>
+            dispatch(
+              updateNodeData({
+                id: nodeId,
+                data: {
+                  typeface:
+                    value === "inherit"
+                      ? undefined
+                      : (value as NodeData["typeface"]),
+                },
+              }),
+            )
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Diagram default" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="inherit">Diagram default</SelectItem>
+            <SelectItem value="rough">Rough</SelectItem>
+            <SelectItem value="clean">Clean</SelectItem>
+            <SelectItem value="mono">Mono</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="node-link">Link</Label>
+        <Input
+          id="node-link"
+          placeholder="https://..."
+          value={data.link ?? ""}
+          onChange={(event) =>
+            dispatch(
+              updateNodeData({
+                id: nodeId,
+                data: { link: event.target.value.trim() || undefined },
+              }),
+            )
+          }
+        />
       </div>
 
       <div className="space-y-2">

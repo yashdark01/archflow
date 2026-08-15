@@ -1,5 +1,6 @@
 "use client";
 
+import { DiagramProperties } from "@/components/properties/DiagramProperties";
 import { EdgeProperties } from "@/components/properties/EdgeProperties";
 import { NodeProperties } from "@/components/properties/NodeProperties";
 import {
@@ -20,13 +21,9 @@ export function PropertiesSheet({ open, onOpenChange }: PropertiesSheetProps) {
   const selectedNodeId = useAppSelector((state) => state.ui.selectedNodeId);
   const selectedEdgeId = useAppSelector((state) => state.ui.selectedEdgeId);
 
-  let title = "Properties";
-  let description = "Select a node or edge to edit.";
-  let content = (
-    <p className="text-sm text-muted-foreground">
-      Select a node or edge on the canvas to edit labels, colors, and edge style.
-    </p>
-  );
+  let title = "Diagram";
+  let description = "Diagram defaults and legend.";
+  let content = <DiagramProperties />;
 
   if (selectedNodeId) {
     title = "Node";

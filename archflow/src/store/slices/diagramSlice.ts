@@ -6,6 +6,22 @@ import {
 } from "reactflow";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type {
+  ArchFlowCanvasDocument,
+  EraserArchitectureDocument,
+  EraserDiagramStyle,
+  EraserLegend,
+  LayoutOverride,
+} from "@/lib/canvas/schema";
+import { createEmptyDocument } from "@/lib/canvas/schema";
+import { diagramToDocument } from "@/lib/canvas/document/fromDiagram";
+import { parseDocument } from "@/lib/canvas/document/parseDocument";
+import { documentToDiagram } from "@/lib/canvas/document/toDiagram";
+import {
+  applyLayoutOverrides,
+  captureLayoutOverrides,
+} from "@/lib/canvas/layout/overrides";
+import { applyCanvasLayout } from "@/lib/canvas/layout/applyLayout";
+import type {
   DiagramEdge,
   DiagramNode,
   DiagramSnapshot,
@@ -15,6 +31,8 @@ import type {
 import { DEFAULT_EDGE_TYPE } from "@/constants/edgeDefaults";
 import { generateId } from "@/utils/generateId";
 import { getEdgeMarkers } from "@/utils/edgeMarkers";
+import { normalizeEdgeDataPatch } from "@/lib/canvas/connection/connectorSync";
+import { LEGEND_OVERRIDE_KEY } from "@/lib/canvas/legend/constants";
 import {
   assignEraserName,
   ensureUniqueEraserName,
@@ -26,6 +44,8 @@ const HISTORY_LIMIT = 50;
 interface DiagramState {
   nodes: DiagramNode[];
   edges: DiagramEdge[];
+  document: EraserArchitectureDocument;
+  layoutOverrides: Record<string, LayoutOverride>;
   past: DiagramSnapshot[];
   future: DiagramSnapshot[];
 }
@@ -33,6 +53,8 @@ interface DiagramState {
 const initialState: DiagramState = {
   nodes: [],
   edges: [],
+  document: createEmptyDocument(),
+  layoutOverrides: {},
   past: [],
   future: [],
 };
@@ -50,6 +72,10 @@ function cloneNode(node: DiagramNode): DiagramNode {
       borderStyle: node.data.borderStyle,
       ...(node.data.icon ? { icon: node.data.icon } : {}),
       ...(node.data.eraserName ? { eraserName: node.data.eraserName } : {}),
+      ...(node.data.colorMode ? { colorMode: node.data.colorMode } : {}),
+      ...(node.data.styleMode ? { styleMode: node.data.styleMode } : {}),
+      ...(node.data.typeface ? { typeface: node.data.typeface } : {}),
+      ...(node.data.link ? { link: node.data.link } : {}),
     },
     selected: node.selected,
     ...(node.style ? { style: { ...node.style } } : {}),
@@ -73,6 +99,7 @@ function cloneEdge(edge: DiagramEdge): DiagramEdge {
         ? { strokeWidth: edge.data.strokeWidth }
         : {}),
       ...(edge.data?.strokeStyle ? { strokeStyle: edge.data.strokeStyle } : {}),
+      ...(edge.data?.connector ? { connector: edge.data.connector } : {}),
       ...(edge.data?.bendPoint ? { bendPoint: { ...edge.data.bendPoint } } : {}),
     },
     selected: edge.selected,
@@ -120,6 +147,114 @@ const diagramSlice = createSlice({
       }));
       state.past = [];
       state.future = [];
+    },
+    loadCanvasDocument(state, action: PayloadAction<ArchFlowCanvasDocument>) {
+      state.document = action.payload.document;
+      state.layoutOverrides = { ...action.payload.layoutOverrides };
+      const snapshot = documentToDiagram(action.payload.document, {
+        applyLayout: true,
+      });
+      state.nodes = applyLayoutOverrides(
+        snapshot.nodes,
+        action.payload.layoutOverrides,
+      );
+      state.edges = snapshot.edges.map((edge) => ({
+        ...edge,
+        type: edge.type ?? DEFAULT_EDGE_TYPE,
+      }));
+      state.past = [];
+      state.future = [];
+    },
+    relayoutFromDocument(
+      state,
+      action: PayloadAction<{ manualOnly?: boolean } | undefined>,
+    ) {
+      const { nodes } = applyCanvasLayout({
+        nodes: state.nodes,
+        edges: state.edges,
+        eraserDirection: state.document.style.direction,
+        layoutOverrides: state.layoutOverrides,
+        manualOnly: action.payload?.manualOnly ?? false,
+      });
+      state.nodes = nodes;
+    },
+    syncLayoutOverridesFromNodes(state) {
+      state.layoutOverrides = captureLayoutOverrides(state.nodes);
+    },
+    setCanvasDocument(state, action: PayloadAction<EraserArchitectureDocument>) {
+      state.document = action.payload;
+    },
+    updateDocumentStyle(
+      state,
+      action: PayloadAction<Partial<EraserDiagramStyle>>,
+    ) {
+      const previousDirection = state.document.style.direction;
+      state.document.style = { ...state.document.style, ...action.payload };
+
+      if (
+        action.payload.direction &&
+        action.payload.direction !== previousDirection
+      ) {
+        const { nodes } = applyCanvasLayout({
+          nodes: state.nodes,
+          edges: state.edges,
+          eraserDirection: action.payload.direction,
+          layoutOverrides: state.layoutOverrides,
+        });
+        state.nodes = nodes;
+      }
+    },
+    updateDocumentLegend(state, action: PayloadAction<EraserLegend | undefined>) {
+      if (
+        !action.payload ||
+        (action.payload.items.length === 0 && !action.payload.position)
+      ) {
+        delete state.document.legend;
+        const { [LEGEND_OVERRIDE_KEY]: removedLegend, ...rest } = state.layoutOverrides;
+        void removedLegend;
+        state.layoutOverrides = rest;
+        return;
+      }
+      state.document.legend = action.payload;
+    },
+    updateDocumentTitle(state, action: PayloadAction<string>) {
+      state.document.title = action.payload;
+    },
+    updateLegendLayoutOverride(
+      state,
+      action: PayloadAction<{ x: number; y: number }>,
+    ) {
+      state.layoutOverrides = {
+        ...state.layoutOverrides,
+        [LEGEND_OVERRIDE_KEY]: {
+          x: action.payload.x,
+          y: action.payload.y,
+        },
+      };
+    },
+    clearLegendLayoutOverride(state) {
+      if (!state.layoutOverrides[LEGEND_OVERRIDE_KEY]) return;
+      const { [LEGEND_OVERRIDE_KEY]: removedLegend, ...rest } = state.layoutOverrides;
+      void removedLegend;
+      state.layoutOverrides = rest;
+    },
+    syncDocumentContent(state) {
+      const synced = diagramToDocument(state.nodes, state.edges, {
+        title: state.document.title,
+        style: state.document.style,
+        legend: state.document.legend,
+      });
+      state.document.elements = synced.elements;
+      state.document.connections = synced.connections;
+      if (synced.title !== undefined) {
+        state.document.title = synced.title;
+      }
+    },
+    setLayoutOverrides(
+      state,
+      action: PayloadAction<Record<string, LayoutOverride>>,
+    ) {
+      state.layoutOverrides = action.payload;
     },
     onNodesChange(state, action: PayloadAction<NodeChange[]>) {
       const shouldSkipHistory = action.payload.every(
@@ -215,10 +350,13 @@ const diagramSlice = createSlice({
     ) {
       pushHistory(state);
       const edge = state.edges.find((item) => item.id === action.payload.id);
-      const patch = action.payload.data;
-      if (edge?.data && patch) {
-        const next: EdgeData = { ...edge.data, ...patch };
-        if ("bendPoint" in patch && patch.bendPoint === undefined) {
+      if (edge?.data && action.payload.data) {
+        const normalized = normalizeEdgeDataPatch(
+          action.payload.data,
+          edge.data,
+        );
+        const next: EdgeData = { ...edge.data, ...normalized };
+        if ("bendPoint" in normalized && normalized.bendPoint === undefined) {
           delete next.bendPoint;
         }
         edge.data = next;
@@ -330,6 +468,17 @@ const diagramSlice = createSlice({
 
 export const {
   loadDiagram,
+  loadCanvasDocument,
+  relayoutFromDocument,
+  syncLayoutOverridesFromNodes,
+  setCanvasDocument,
+  updateDocumentStyle,
+  updateDocumentLegend,
+  updateDocumentTitle,
+  updateLegendLayoutOverride,
+  clearLegendLayoutOverride,
+  syncDocumentContent,
+  setLayoutOverrides,
   onNodesChange,
   onEdgesChange,
   addNode,
@@ -354,6 +503,13 @@ export default diagramSlice.reducer;
 
 export function createEmptyDiagram(): DiagramSnapshot {
   return { nodes: [], edges: [] };
+}
+
+export function createCanvasDocumentFromDsl(source: string): ArchFlowCanvasDocument {
+  return {
+    document: parseDocument(source),
+    layoutOverrides: {},
+  };
 }
 
 export { DEFAULT_EDGE_TYPE };

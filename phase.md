@@ -2,7 +2,7 @@
 
 > **Last updated:** August 2026  
 > **Author:** Yash Patidar  
-> **Status:** Phase 1 & 2 complete · Phase 3+ planned  
+> **Status:** Phase 1 & 2 complete · Phase 3 complete · Phase 4+ planned  
 > **Companion docs:** [product.md](./product.md) · [README.md](./README.md)
 
 ---
@@ -454,6 +454,21 @@ src/utils/generateId.ts
 > **Depends on:** Phase 1 complete  
 > **Status:** ✅ Complete (Stages 2.1–2.4)
 
+### Phase 2b — Eraser DSL Parity (in progress)
+
+> **Goal:** Match [Eraser diagram-as-code](https://docs.eraser.io/diagram-as-code) across all four diagram types.  
+> **Plan:** [docs/eraser-parity-plan.md](./archflow/docs/eraser-parity-plan.md)  
+> **Status:** 🔄 Phase 2b.1 — cloud architecture core
+
+| Stage | Scope | Status |
+|---|---|---|
+| 2b.1 | Architecture DSL round-trip (groups, connectors, settings) | 🔄 In progress |
+| 2b.2 | Flow chart shapes | ⬜ Planned |
+| 2b.3 | ERD entities + relationships | ⬜ Planned |
+| 2b.4 | Sequence diagrams | ⬜ Planned |
+| 2b.5 | Legends + fixture suite | ⬜ Planned |
+| 2b.6 | Persist `eraserDiagramType` in DB | ⬜ Planned |
+
 ---
 
 ## Stage 2.1 — Code Panel UI
@@ -566,7 +581,7 @@ src/hooks/useMermaidSync.ts
 > **Goal:** User accounts, PostgreSQL storage, diagram dashboard with auto-save.  
 > **Duration:** Weeks 7–8  
 > **Depends on:** Phase 1 complete (Phase 2 optional but recommended)  
-> **Status:** 📋 Planned
+> **Status:** ✅ Complete
 
 ---
 
@@ -1159,12 +1174,12 @@ Update this table as stages complete.
 
 | Stage | Name | Status |
 |---|---|---|
-| 3.1 | Database & Prisma Setup | ⬜ Not started |
-| 3.2 | Authentication (NextAuth) | ⬜ Not started |
-| 3.3 | Guest → Authenticated Migration | ⬜ Not started |
-| 3.4 | Diagram CRUD API | ⬜ Not started |
-| 3.5 | Dashboard UI | ⬜ Not started |
-| 3.6 | Auto-Save to Database | ⬜ Not started |
+| 3.1 | Database & Prisma Setup | ✅ Complete |
+| 3.2 | Authentication (NextAuth) | ✅ Complete |
+| 3.3 | Guest → Authenticated Migration | ✅ Complete |
+| 3.4 | Diagram CRUD API | ✅ Complete |
+| 3.5 | Dashboard UI | ✅ Complete |
+| 3.6 | Auto-Save to Database | ✅ Complete |
 
 ### Phase 4 — Sharing & Templates
 

@@ -12,12 +12,12 @@ import {
   type OnSelectionChangeParams,
 } from "reactflow";
 import { ConnectionLine } from "@/components/canvas/ConnectionLine";
+import { CanvasLegend } from "@/components/canvas/legend/CanvasLegend";
 import { FitViewOnLoad } from "@/components/canvas/FitViewOnLoad";
-import { ConnectionStyleBar } from "@/components/canvas/ConnectionStyleBar";
 import { CanvasControls } from "@/components/canvas/controls/CanvasControls";
 import { MiniMapControl } from "@/components/canvas/controls/MiniMapControl";
 import { edgeTypes } from "@/lib/reactflow/edgeTypes";
-import { MAX_ZOOM, MIN_ZOOM, SNAP_GRID, DEFAULT_VIEWPORT } from "@/lib/reactflow/defaultViewport";
+import { MAX_ZOOM, SNAP_GRID, DEFAULT_VIEWPORT } from "@/lib/reactflow/defaultViewport";
 import { nodeTypes } from "@/lib/reactflow/nodeTypes";
 import { useCanvasDrop } from "@/hooks/useCanvasDrop";
 import { useCanvasTextLabel } from "@/hooks/useCanvasTextLabel";
@@ -31,12 +31,12 @@ import {
   updateEdgeConnection,
   onEdgesChange,
   onNodesChange,
+  syncLayoutOverridesFromNodes,
 } from "@/store/slices/diagramSlice";
 import {
   setSelectedEdge,
   setSelectedNode,
   setLayoutManual,
-  setPropertiesPanelOpen,
 } from "@/store/slices/uiSlice";
 import { createEdge } from "@/utils/edgeFactory";
 
@@ -130,10 +130,8 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
     ({ nodes: selectedNodes, edges: selectedEdges }: OnSelectionChangeParams) => {
       if (selectedNodes.length === 1) {
         dispatch(setSelectedNode(selectedNodes[0].id));
-        dispatch(setPropertiesPanelOpen(true));
       } else if (selectedEdges.length === 1) {
         dispatch(setSelectedEdge(selectedEdges[0].id));
-        dispatch(setPropertiesPanelOpen(true));
       } else if (selectedNodes.length === 0 && selectedEdges.length === 0) {
         dispatch(setSelectedNode(null));
         dispatch(setSelectedEdge(null));
@@ -153,7 +151,7 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
   return (
     <div
       ref={canvasRef}
-      className={cn("h-full w-full", placement && "canvas-placement-active")}
+      className={cn("relative h-full w-full", placement && "canvas-placement-active")}
     >
       <ReactFlow
         nodes={nodes}
@@ -174,6 +172,7 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
                 );
                 if (resized) dispatch(setLayoutManual(true));
                 dispatch(onNodesChange(changes));
+                if (resized) dispatch(syncLayoutOverridesFromNodes());
               }
         }
         onEdgesChange={
@@ -189,6 +188,7 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
             ? undefined
             : () => {
                 dispatch(setLayoutManual(true));
+                dispatch(syncLayoutOverridesFromNodes());
                 dispatch(commitDragHistory());
               }
         }
@@ -236,16 +236,16 @@ export function CanvasBoard({ readOnly = false }: CanvasBoardProps) {
           <MiniMap
             pannable
             zoomable
-            className="!bottom-14 !right-3"
+            className="!bottom-12 !right-3"
             nodeColor={(node) => node.data?.color ?? "#64748b"}
             maskColor="rgb(0 0 0 / 0.15)"
           />
         ) : null}
         {!readOnly ? <CanvasControls /> : null}
         {!readOnly ? <MiniMapControl /> : null}
-        {!readOnly ? <ConnectionStyleBar /> : null}
         <FitViewOnLoad />
       </ReactFlow>
+      <CanvasLegend readOnly={readOnly} />
     </div>
   );
 }

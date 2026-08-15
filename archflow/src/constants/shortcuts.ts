@@ -14,9 +14,8 @@ export const KEYBOARD_SHORTCUTS: ShortcutConfig[] = [
   { keys: "Ctrl+V", label: "Paste", action: "paste" },
   { keys: "Ctrl+D", label: "Duplicate", action: "duplicate" },
   { keys: "Ctrl+E", label: "Export PNG", action: "export" },
+  { keys: "Ctrl+/", label: "Toggle code panel", action: "toggleCode" },
   { keys: "Ctrl+0", label: "Fit view", action: "fitView" },
-  { keys: "Ctrl+/", label: "Toggle diagram-as-code panel", action: "toggleCode" },
-  { keys: "Ctrl+Shift+/", label: "Cycle document / canvas view", action: "toggleView" },
 ];
 
 export function isModKey(event: KeyboardEvent): boolean {

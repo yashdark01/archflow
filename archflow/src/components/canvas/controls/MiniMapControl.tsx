@@ -15,14 +15,13 @@ export function MiniMapControl() {
   const minimapOpen = useAppSelector((state) => state.ui.minimapOpen);
 
   return (
-    <div className="absolute bottom-3 right-3 z-10">
+    <div className="canvas-control-surface absolute bottom-3 right-3 z-10 p-0.5">
       <Tooltip>
         <TooltipTrigger
           render={
             <Button
-              variant="secondary"
+              variant="ghost"
               size="icon-sm"
-              className="card-surface shadow-md"
               aria-label="Toggle minimap"
               onClick={() => dispatch(toggleMinimap())}
             >

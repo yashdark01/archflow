@@ -30,14 +30,13 @@ function makeNode(
 describe("connectionDsl", () => {
   it("parses forward, backward, bidirectional, and line connections", () => {
     const forward = parseConnectionLine("API > Service: request");
-    expect(forward).toEqual([
-      {
-        source: "API",
-        target: "Service",
-        label: "request",
-        arrowDirection: "forward",
-      },
-    ]);
+    expect(forward[0]).toMatchObject({
+      source: "API",
+      target: "Service",
+      label: "request",
+      arrowDirection: "forward",
+      connector: ">",
+    });
 
     const backward = parseConnectionLine("API < Service");
     expect(backward[0]?.arrowDirection).toBe("backward");
@@ -99,9 +98,9 @@ describe("eraser dsl round-trip", () => {
     expect(code).toContain("Service <> DB");
   });
 
-  it("parseEraserDsl extracts connections with arrow direction", () => {
+  it("parseEraserDsl extracts connections with connector", () => {
     const parsed = parseEraserDsl("API < Service");
-    expect(parsed.connections[0]?.arrowDirection).toBe("backward");
+    expect(parsed.connections[0]?.connector).toBe("<");
   });
 });
 
@@ -123,6 +122,6 @@ describe("diagramToDsl", () => {
 
     const code = diagramToDsl(nodes, edges);
     expect(code).toContain("api_gateway > user_service");
-    expect(code).not.toContain("API Gateway");
+    expect(code).toContain("label: \"API Gateway\"");
   });
 });

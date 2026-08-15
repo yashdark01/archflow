@@ -12,7 +12,7 @@ export function FitViewOnLoad() {
   useEffect(() => {
     const onFitView = () => {
       if (nodeCount === 0) return;
-      fitView({ padding: 0.25, duration: 300 });
+      fitView({ padding: 0.18, duration: 300 });
     };
 
     window.addEventListener("archflow:fit-view", onFitView);
@@ -28,7 +28,7 @@ export function FitViewOnLoad() {
 
     fitted.current = true;
     requestAnimationFrame(() => {
-      fitView({ padding: 0.25, duration: 350 });
+      fitView({ padding: 0.18, duration: 350 });
     });
   }, [fitView, nodeCount]);
 

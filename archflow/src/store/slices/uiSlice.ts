@@ -10,12 +10,7 @@ import type {
 import { DEFAULT_EDGE_COLOR, DEFAULT_EDGE_STROKE_WIDTH } from "@/constants/edgeDefaults";
 import { DEFAULT_EDGE_TYPE } from "@/constants/edgeDefaults";
 
-export type EditorViewMode = "document" | "both" | "canvas";
-export type CodeDialect = "eraser" | "mermaid";
-export type MermaidSyncStatus = "synced" | "pending" | "error";
-export type EraserSyncStatus = "synced" | "pending" | "error";
 export type LayoutDirection = "LR" | "TD";
-export type CodePanelTab = "code" | "preview";
 
 export type PlacementPayload =
   | { kind: "node"; nodeType: NodeType }
@@ -24,6 +19,7 @@ export type PlacementPayload =
 
 export type InsertPickerView = "root" | "icons" | "nodes";
 export type ColorScheme = "dark" | "light";
+export type RightPanelTab = "properties" | "code";
 
 interface UiState {
   selectedNodeId: string | null;
@@ -33,20 +29,12 @@ interface UiState {
   insertPickerFocusSearch: boolean;
   insertPickerView: InsertPickerView;
   placement: PlacementPayload | null;
-  propertiesPanelOpen: boolean;
-  propertiesPanelWidth: number;
-  documentNotes: string;
-  codePanelOpen: boolean;
-  codeSheetOpen: boolean;
-  editorViewMode: EditorViewMode;
+  rightPanelOpen: boolean;
+  rightPanelTab: RightPanelTab;
+  rightPanelWidth: number;
+  codePanelDirty: boolean;
   eraserCode: string;
-  codeDialect: CodeDialect;
-  codePanelTab: CodePanelTab;
   mermaidCode: string;
-  mermaidSyncStatus: MermaidSyncStatus;
-  mermaidSyncError: string | null;
-  eraserSyncStatus: EraserSyncStatus;
-  eraserSyncError: string | null;
   layoutManual: boolean;
   layoutDirection: LayoutDirection;
   minimapOpen: boolean;
@@ -73,23 +61,15 @@ const initialState: UiState = {
   insertPickerFocusSearch: false,
   insertPickerView: "root",
   placement: null,
-  propertiesPanelOpen: false,
-  propertiesPanelWidth: 320,
-  codePanelOpen: true,
-  codeSheetOpen: false,
-  documentNotes: "",
-  editorViewMode: "both",
+  rightPanelOpen: false,
+  rightPanelTab: "properties",
+  rightPanelWidth: 400,
+  codePanelDirty: false,
   eraserCode: "",
-  codeDialect: "mermaid",
-  codePanelTab: "code",
   mermaidCode: "",
-  mermaidSyncStatus: "synced",
-  mermaidSyncError: null,
-  eraserSyncStatus: "synced",
-  eraserSyncError: null,
   layoutManual: false,
   layoutDirection: "LR",
-  minimapOpen: true,
+  minimapOpen: false,
   snapToGrid: true,
   activeEdgeType: DEFAULT_EDGE_TYPE,
   activeArrowDirection: "forward",
@@ -146,58 +126,34 @@ const uiSlice = createSlice({
     clearPlacement(state) {
       state.placement = null;
     },
-    togglePropertiesPanel(state) {
-      state.propertiesPanelOpen = !state.propertiesPanelOpen;
+    toggleRightPanel(state) {
+      state.rightPanelOpen = !state.rightPanelOpen;
     },
-    setPropertiesPanelOpen(state, action: PayloadAction<boolean>) {
-      state.propertiesPanelOpen = action.payload;
+    setRightPanelOpen(state, action: PayloadAction<boolean>) {
+      state.rightPanelOpen = action.payload;
     },
-    setPropertiesPanelWidth(state, action: PayloadAction<number>) {
-      state.propertiesPanelWidth = Math.min(480, Math.max(240, action.payload));
+    setRightPanelTab(state, action: PayloadAction<RightPanelTab>) {
+      state.rightPanelTab = action.payload;
     },
-    toggleCodePanel(state) {
-      state.codePanelOpen = !state.codePanelOpen;
+    setRightPanelWidth(state, action: PayloadAction<number>) {
+      state.rightPanelWidth = Math.min(720, Math.max(280, action.payload));
     },
-    toggleCodeSheet(state) {
-      state.codeSheetOpen = !state.codeSheetOpen;
-    },
-    setCodeSheetOpen(state, action: PayloadAction<boolean>) {
-      state.codeSheetOpen = action.payload;
-    },
-    setEditorViewMode(state, action: PayloadAction<EditorViewMode>) {
-      state.editorViewMode = action.payload;
-      if (action.payload === "document") {
-        state.codePanelOpen = true;
-      } else if (action.payload === "canvas") {
-        state.codePanelOpen = false;
-      } else {
-        state.codePanelOpen = true;
+    openRightPanelTab(state, action: PayloadAction<RightPanelTab>) {
+      if (state.rightPanelOpen && state.rightPanelTab === action.payload) {
+        state.rightPanelOpen = false;
+        return;
       }
+      state.rightPanelOpen = true;
+      state.rightPanelTab = action.payload;
+    },
+    setCodePanelDirty(state, action: PayloadAction<boolean>) {
+      state.codePanelDirty = action.payload;
     },
     setEraserCode(state, action: PayloadAction<string>) {
       state.eraserCode = action.payload;
     },
-    setCodeDialect(state, action: PayloadAction<CodeDialect>) {
-      state.codeDialect = action.payload;
-      state.codePanelTab = "code";
-    },
-    setCodePanelTab(state, action: PayloadAction<CodePanelTab>) {
-      state.codePanelTab = action.payload;
-    },
     setMermaidCode(state, action: PayloadAction<string>) {
       state.mermaidCode = action.payload;
-    },
-    setMermaidSyncStatus(state, action: PayloadAction<MermaidSyncStatus>) {
-      state.mermaidSyncStatus = action.payload;
-    },
-    setMermaidSyncError(state, action: PayloadAction<string | null>) {
-      state.mermaidSyncError = action.payload;
-    },
-    setEraserSyncStatus(state, action: PayloadAction<EraserSyncStatus>) {
-      state.eraserSyncStatus = action.payload;
-    },
-    setEraserSyncError(state, action: PayloadAction<string | null>) {
-      state.eraserSyncError = action.payload;
     },
     setLayoutManual(state, action: PayloadAction<boolean>) {
       state.layoutManual = action.payload;
@@ -238,9 +194,6 @@ const uiSlice = createSlice({
     setDiagramTitle(state, action: PayloadAction<string>) {
       state.diagramTitle = action.payload;
     },
-    setDocumentNotes(state, action: PayloadAction<string>) {
-      state.documentNotes = action.payload;
-    },
     setSaveStatus(state, action: PayloadAction<SaveStatus>) {
       state.saveStatus = action.payload;
     },
@@ -268,21 +221,14 @@ export const {
   setInsertPickerView,
   startPlacement,
   clearPlacement,
-  togglePropertiesPanel,
-  setPropertiesPanelOpen,
-  setPropertiesPanelWidth,
-  toggleCodePanel,
-  toggleCodeSheet,
-  setCodeSheetOpen,
-  setEditorViewMode,
+  toggleRightPanel,
+  setRightPanelOpen,
+  setRightPanelTab,
+  setRightPanelWidth,
+  openRightPanelTab,
+  setCodePanelDirty,
   setEraserCode,
-  setCodeDialect,
-  setCodePanelTab,
   setMermaidCode,
-  setMermaidSyncStatus,
-  setMermaidSyncError,
-  setEraserSyncStatus,
-  setEraserSyncError,
   setLayoutManual,
   resetLayout,
   setLayoutDirection,
@@ -296,7 +242,6 @@ export const {
   requestEdgeLabelEdit,
   requestNodeLabelEdit,
   setDiagramTitle,
-  setDocumentNotes,
   setSaveStatus,
   setCopiedNodes,
   acknowledgeMobileEditor,

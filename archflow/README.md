@@ -51,9 +51,12 @@ Drag   → Drop → Connect → Design
 - Two-way sync: canvas ↔ Mermaid; Eraser DSL mode with validation
 - Copy snippet, sync badge, onboarding tip, Vitest round-trip tests
 
-### Phase 3 — Auth + Persistence 📋 Planned
-- UI shells for login, register, and dashboard (localStorage today)
-- API routes and Prisma schema — **not yet implemented**
+### Phase 3 — Auth + Persistence ✅
+- NextAuth (Google, email magic link, dev credentials)
+- Prisma + PostgreSQL diagram storage
+- Dashboard wired to API (create, rename, duplicate, delete, search, sort)
+- Auto-save to DB when signed in; localStorage for guests
+- Guest diagram migration prompt on first sign-in
 
 ### Phase 4 — AI Generation 📋 Planned
 - API route stubs only; toolbar AI buttons disabled
@@ -449,8 +452,11 @@ model User {
 model Diagram {
   id        String   @id @default(cuid())
   title     String   @default("Untitled Diagram")
-  nodes     Json
-  edges     Json
+  nodes     Json     @default("[]")
+  edges     Json     @default("[]")
+  mermaidCode   String?
+  eraserCode    String?
+  documentNotes String?
   shareId   String?  @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

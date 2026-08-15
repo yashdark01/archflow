@@ -50,9 +50,9 @@
   --canvas-dot: #27272a;
   --canvas-bg: #f8f9fb;
   --canvas-dot-light: #e2e5ea;
-  --canvas-border: #e2e8f0;
-  --canvas-text-muted: #64748b;
-  --canvas-banner-bg: rgba(255, 255, 255, 0.96);
+  --canvas-border: var(--yash-border-hover);
+  --canvas-text-muted: var(--yash-text-muted);
+  --canvas-banner-bg: color-mix(in srgb, var(--yash-surface-elevated) 96%, transparent);
   --canvas-selection: #2563eb;
   --canvas-edge: #94a3b8;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
@@ -181,6 +181,9 @@
   --panel-bg: var(--yash-surface);
   --panel-border: var(--yash-border);
   --editor-canvas-bg: #f8fafc;
+  --canvas-border: #e2e8f0;
+  --canvas-text-muted: #64748b;
+  --canvas-banner-bg: rgba(255, 255, 255, 0.96);
   --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
   --shadow-md: 0 8px 24px rgb(15 23 42 / 0.08);
 }
@@ -365,10 +368,6 @@ body {
   opacity: 0.35;
 }
 
-.editor-document {
-  color: var(--foreground);
-}
-
 .editor-canvas-area {
   isolation: isolate;
   background: var(--editor-canvas-bg);
@@ -396,130 +395,6 @@ body {
   animation: archflow-fade-in 0.1s ease-out;
 }
 
-/* Tiptap document editor — Notion/Docs-style */
-.archflow-doc-editor {
-  min-height: 200px;
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  color: var(--foreground);
-}
-
-.archflow-doc-editor-compact {
-  font-size: 0.8125rem;
-  line-height: 1.6;
-}
-
-.archflow-doc-editor .tiptap {
-  outline: none;
-}
-
-.archflow-doc-editor .tiptap p.is-editor-empty:first-child::before,
-.archflow-doc-editor .tiptap.is-empty::before {
-  color: var(--muted-foreground);
-  opacity: 0.45;
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-
-.archflow-doc-editor .tiptap[data-placeholder]:empty::before {
-  color: var(--muted-foreground);
-  opacity: 0.45;
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-
-.archflow-doc-editor .tiptap h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  line-height: 1.25;
-  margin: 1.25rem 0 0.5rem;
-}
-
-.archflow-doc-editor .tiptap h2 {
-  font-size: 1.35rem;
-  font-weight: 600;
-  line-height: 1.3;
-  margin: 1rem 0 0.5rem;
-}
-
-.archflow-doc-editor .tiptap h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.35rem;
-}
-
-.archflow-doc-editor .tiptap p {
-  margin: 0.35rem 0;
-}
-
-.archflow-doc-editor .tiptap ul,
-.archflow-doc-editor .tiptap ol {
-  margin: 0.5rem 0;
-  padding-left: 1.5rem;
-}
-
-.archflow-doc-editor .tiptap ul[data-type="taskList"] {
-  list-style: none;
-  padding-left: 0.25rem;
-}
-
-.archflow-doc-editor .tiptap ul[data-type="taskList"] li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.archflow-doc-editor .tiptap ul[data-type="taskList"] li > label {
-  margin-top: 0.2rem;
-}
-
-.archflow-doc-editor .tiptap blockquote {
-  border-left: 3px solid var(--border);
-  margin: 0.75rem 0;
-  padding-left: 1rem;
-  color: var(--muted-foreground);
-}
-
-.archflow-doc-editor .tiptap pre.archflow-code-block,
-.archflow-doc-editor .tiptap pre {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.8125rem;
-  margin: 0.75rem 0;
-  padding: 0.75rem 1rem;
-}
-
-.archflow-doc-editor .tiptap code {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 0.25rem;
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.85em;
-  padding: 0.1em 0.35em;
-}
-
-.archflow-doc-editor .tiptap pre code {
-  background: none;
-  padding: 0;
-}
-
-.archflow-doc-editor .tiptap a.archflow-doc-link {
-  color: var(--primary);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.archflow-doc-editor .tiptap hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 1.25rem 0;
-}
-
 .archflow-canvas-light .react-flow__handle {
   border-color: var(--canvas-bg);
 }
@@ -531,10 +406,11 @@ body {
 }
 
 .canvas-control-surface {
-  background: var(--canvas-banner-bg);
-  border: 1px solid var(--canvas-border);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgb(15 23 42 / 0.08);
+  box-shadow: var(--shadow-sm);
+  color: var(--foreground);
 }
 
 .react-flow__node-group {
@@ -583,6 +459,11 @@ body {
 .archflow-canvas-light .react-flow__minimap {
   border-color: var(--canvas-border);
   background: var(--canvas-banner-bg);
+}
+
+.archflow-canvas-eraser .react-flow__minimap {
+  border-color: var(--panel-border);
+  background: var(--panel-bg);
 }
 
 .archflow-layout-banner {

@@ -11,6 +11,7 @@ import {
   FileStack,
   FolderOpen,
   Lock,
+  LogOut,
   Palette,
   Plus,
   Wand2,
@@ -18,6 +19,8 @@ import {
 
 interface DashboardSidebarProps {
   onNewFile: () => void;
+  userEmail?: string | null;
+  onSignOut?: () => void;
 }
 
 const NAV_ITEMS: {
@@ -32,7 +35,11 @@ const NAV_ITEMS: {
   { href: "/dashboard/archive", label: "Archive", icon: Archive, shortcut: "E" },
 ];
 
-export function DashboardSidebar({ onNewFile }: DashboardSidebarProps) {
+export function DashboardSidebar({
+  onNewFile,
+  userEmail,
+  onSignOut,
+}: DashboardSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -49,7 +56,7 @@ export function DashboardSidebar({ onNewFile }: DashboardSidebarProps) {
           className="ml-auto flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
           aria-label="Workspace"
         >
-          Yash&apos;s Team
+          Workspace
           <ChevronDown className="size-3.5" />
         </button>
       </div>
@@ -83,11 +90,13 @@ export function DashboardSidebar({ onNewFile }: DashboardSidebarProps) {
       </nav>
 
       <div className="mx-3 mt-3 rounded-lg border border-border bg-muted/30 p-3">
-        <p className="text-xs font-medium text-foreground">ArchFlow</p>
+        <p className="text-xs font-medium text-foreground">Cloud sync</p>
         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-          Open-source diagram editor. Diagrams are saved locally in your browser.
+          Diagrams are saved to your account and synced to the database.
         </p>
-        <p className="mt-2 text-[10px] text-muted-foreground">Local storage · Free</p>
+        {userEmail ? (
+          <p className="mt-2 truncate text-[10px] text-muted-foreground">{userEmail}</p>
+        ) : null}
       </div>
 
       <div className="mt-auto flex flex-col gap-0.5 p-2">
@@ -125,6 +134,16 @@ export function DashboardSidebar({ onNewFile }: DashboardSidebarProps) {
             Soon
           </span>
         </button>
+        {onSignOut ? (
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+          >
+            <LogOut className="size-4 opacity-70" />
+            Sign out
+          </button>
+        ) : null}
       </div>
 
       <div className="border-t border-border p-3">

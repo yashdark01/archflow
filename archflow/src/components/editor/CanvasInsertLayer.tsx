@@ -5,15 +5,19 @@ import { CanvasToolRail } from "@/components/editor/CanvasToolRail";
 import { InsertPicker } from "@/components/editor/InsertPicker";
 import { PlacementGhost } from "@/components/editor/PlacementGhost";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearPlacement, setInsertPickerOpen, setSidebarOpen, startPlacement } from "@/store/slices/uiSlice";
+import {
+  clearPlacement,
+  setInsertPickerOpen,
+  setSidebarOpen,
+  startPlacement,
+} from "@/store/slices/uiSlice";
 import { PaletteSheet } from "@/components/editor/PaletteSheet";
 
 interface CanvasInsertLayerProps {
-  onCode?: () => void;
   onProperties?: () => void;
 }
 
-export function CanvasInsertLayer({ onCode, onProperties }: CanvasInsertLayerProps) {
+export function CanvasInsertLayer({ onProperties }: CanvasInsertLayerProps) {
   const dispatch = useAppDispatch();
   const placement = useAppSelector((state) => state.ui.placement);
   const focusSearch = useAppSelector((state) => state.ui.insertPickerFocusSearch);
@@ -39,12 +43,11 @@ export function CanvasInsertLayer({ onCode, onProperties }: CanvasInsertLayerPro
         onSearchInsert={() =>
           dispatch(setInsertPickerOpen({ open: true, focusSearch: true }))
         }
-        onCode={onCode}
         onProperties={onProperties}
         onText={() => dispatch(startPlacement({ kind: "text" }))}
         placementActive={Boolean(placement)}
       />
-      <InsertPicker focusSearch={focusSearch} onOpenCode={onCode} />
+      <InsertPicker focusSearch={focusSearch} />
       <PaletteSheet
         open={sidebarOpen}
         onOpenChange={(open) => dispatch(setSidebarOpen(open))}

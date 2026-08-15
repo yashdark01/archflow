@@ -3,7 +3,13 @@ import {
   DEFAULT_EDGE_COLOR,
   DEFAULT_EDGE_STROKE_WIDTH,
 } from "@/constants/edgeDefaults";
-import type { ArrowDirection, DiagramEdge, EdgeStrokeStyle, EdgeType } from "@/types/diagram";
+import { connectorFromEdgeData } from "@/lib/canvas/style/edgeDesign";
+import type {
+  ArrowDirection,
+  DiagramEdge,
+  EdgeStrokeStyle,
+  EdgeType,
+} from "@/types/diagram";
 import { generateId } from "@/utils/generateId";
 import { getEdgeMarkers } from "@/utils/edgeMarkers";
 
@@ -15,9 +21,13 @@ export function createEdge(
     arrowDirection?: ArrowDirection;
     strokeWidth?: number;
     strokeStyle?: EdgeStrokeStyle;
+    connector?: import("@/lib/canvas/schema").EraserConnector;
   },
 ): DiagramEdge {
   const arrowDirection = options?.arrowDirection ?? "forward";
+  const strokeStyle = options?.strokeStyle ?? "solid";
+  const connector =
+    options?.connector ?? connectorFromEdgeData(arrowDirection, strokeStyle);
   const markers = getEdgeMarkers(arrowDirection, color);
 
   return {
@@ -33,7 +43,8 @@ export function createEdge(
       color,
       arrowDirection,
       strokeWidth: options?.strokeWidth ?? DEFAULT_EDGE_STROKE_WIDTH,
-      strokeStyle: options?.strokeStyle ?? "solid",
+      strokeStyle,
+      connector,
     },
     ...markers,
   };
