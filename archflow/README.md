@@ -38,37 +38,28 @@ Drag   → Drop → Connect → Design
 
 ## Features
 
-### Phase 1 — Canvas MVP
-- ✅ Infinite zoomable/pannable canvas (React Flow)
-- ✅ 7 draggable node types from sidebar palette
-- ✅ Custom labeled edges (bezier / straight / smoothstep)
-- ✅ Node properties panel (label, color, description)
-- ✅ Undo / Redo (Redux past/future stack)
-- ✅ PNG export
-- ✅ Auto-save to localStorage
-- ✅ Keyboard shortcuts
+### Phase 1 — Canvas MVP ✅
+- Infinite zoomable/pannable canvas (React Flow)
+- Node types, Eraser icons, canvas text labels, drag-and-drop palette
+- L-shape / curve / straight edges, line controls, bend handles
+- Properties panel (resizable desktop, sheet on mobile), auto-open on selection
+- Undo/redo, copy/paste, context menu, keyboard shortcuts
+- PNG export, localStorage auto-save, mobile banner, error boundary
 
-### Phase 2 — Diagram-as-Code
-- ✅ Monaco editor panel with Mermaid syntax
-- ✅ Two-way sync: canvas ↔ code
-- ✅ Live Mermaid preview
-- ✅ Toggle code panel open/close
+### Phase 2 — Diagram-as-Code ✅
+- Code sheet (`Ctrl+/`) with Monaco Mermaid editor + live preview
+- Two-way sync: canvas ↔ Mermaid; Eraser DSL mode with validation
+- Copy snippet, sync badge, onboarding tip, Vitest round-trip tests
 
-### Phase 3 — Auth + Persistence
-- ✅ NextAuth.js authentication (Google + Email)
-- ✅ Save diagrams to PostgreSQL via Prisma
-- ✅ Dashboard — list, rename, delete, duplicate diagrams
-- ✅ Auto-save to DB on change (debounced)
+### Phase 3 — Auth + Persistence 📋 Planned
+- UI shells for login, register, and dashboard (localStorage today)
+- API routes and Prisma schema — **not yet implemented**
 
-### Phase 4 — AI Generation
-- ✅ Prompt → diagram (Claude API)
-- ✅ AI explains selected node
-- ✅ Streaming response UI
+### Phase 4 — AI Generation 📋 Planned
+- API route stubs only; toolbar AI buttons disabled
 
-### Phase 5 — Sharing + Templates
-- ✅ Shareable read-only links
-- ✅ Template gallery (microservices, monolith, event-driven, CQRS)
-- ✅ Embed diagrams via iframe
+### Phase 5 — Sharing + Templates 📋 Planned
+- Shared view placeholder; share/templates not yet implemented
 
 ---
 

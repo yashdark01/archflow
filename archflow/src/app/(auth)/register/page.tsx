@@ -1,35 +1,15 @@
+import Link from "next/link";
 
-export const Register = () =>{
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const username = formData.get('username') as string;
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string;
-
-        // Here you can handle the registration logic, e.g., send data to your backend API
-        console.log('Registering user:', { username, email, password });
-    };
-    
-    return (
-        <div>
-            <h1>Register Page</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" name="username" required />
-                </div>
-                <div>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" required />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" required />
-                </div>
-                <button type="submit">Register</button>
-            </form>
-         </div>
-    )
+export default function RegisterPage() {
+  return (
+    <div className="flex flex-1 items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-4 text-center">
+        <h1 className="text-2xl font-semibold">Register</h1>
+        <p className="text-sm text-muted">Account registration is coming in Phase 3.</p>
+        <Link href="/editor" className="text-sm font-medium text-primary hover:underline">
+          Continue as guest
+        </Link>
+      </div>
+    </div>
+  );
 }

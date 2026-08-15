@@ -1,22 +1,15 @@
-// i want to create login page 
+import Link from "next/link";
 
-const LoginPage = () => {
-    return (
-        <div>
-            <h1>Login Page</h1>
-            <form>
-                <div>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" required />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" required />
-                </div>
-                <button type="submit">Login</button>
-
-                
-            </form>
-        </div>
-    )
+export default function LoginPage() {
+  return (
+    <div className="flex flex-1 items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-4 text-center">
+        <h1 className="text-2xl font-semibold">Login</h1>
+        <p className="text-sm text-muted">Authentication is coming in Phase 3.</p>
+        <Link href="/editor" className="text-sm font-medium text-primary hover:underline">
+          Continue as guest
+        </Link>
+      </div>
+    </div>
+  );
 }
